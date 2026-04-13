@@ -1,10 +1,12 @@
-import { defineConfig } from 'astro/config';
+JavaScriptimport { defineConfig } from 'astro/config';
 import tailwindcss from '@tailwindcss/vite';
+
 // https://astro.build/config
 export default defineConfig({
-  site: 'https://taisetsuasahikawa-svg.github.io',   // 例: https://tcc2024.github.io
-  base: '/portfolio',                                 // 例: /taisetsu-crafters （ユーザー名.github.io リポジトリの場合は '/' または省略可）
-  output: 'static',                                     // 静的サイトとして必須
+  site: 'https://taisetsuasahikawa-svg.github.io',   // ← あなたのGitHubユーザー名.github.io
+  base: '/portfolio',                                // ← リポジトリ名が「portfolio」の場合（末尾に / は不要）
+  output: 'static',
+
   vite: {
     plugins: [tailwindcss()]
   }
