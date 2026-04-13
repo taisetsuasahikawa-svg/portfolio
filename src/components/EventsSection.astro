@@ -1,0 +1,124 @@
+---
+
+const events = [
+  {
+    startDate: "2025.12.06",
+    endDate: "2025.12.07",
+    title: "あさひかわ手づくり作家展 vol.29",
+    url: "https://asahikawa-tezukurisakkaten.com/gallery/",
+    description: ["旭川地場産業振興センター"],
+  },
+  {
+    startDate: "2025.11.08",
+    endDate: "2025.11.09",
+    title: "旅商人と魔法の倉庫",
+    url: "https://green108945.studio.site/",
+    description: ["札幌市文化芸術交流センター SCARTSモールC", "委託出展"],
+  },
+  {
+    startDate: "2025.05.24",
+    endDate: "2025.05.25",
+    title: "札幌ハンドメイドマルシェ2025",
+    url: "https://spr.handmade-marche.jp/history",
+    description: ["つどーむ"],
+  },
+];
+
+function formatDateRange(start: string, end: string): string {
+  const startParts = start.split('.');
+  const endParts = end.split('.');
+  return `${start} - ${endParts[1]}.${endParts[2]}`;
+}
+
+function getEventStatus(start: string, end: string): string {
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+
+  const startDate = new Date(start);
+  const endDate = new Date(end);
+
+  if (isNaN(startDate.getTime()) || isNaN(endDate.getTime())) return '終了';
+
+  if (today > endDate) return '終了';
+  if (today < startDate) return '予定';
+  return '開催中';
+}
+
+function getStatusClass(status: string): string {
+  if (status === '予定') return 'bg-[#4f6a5e] text-white';
+  if (status === '開催中') return 'bg-amber-500 text-white';
+  return 'bg-stone-100 text-stone-500';
+}
+---
+
+<div id="events" class="section py-20 bg-[#f8f5f0]" data-island>
+  <div class="max-w-screen-2xl mx-auto px-10">
+    
+    <!-- セクションタイトル -->
+    <h2 class="text-5xl font-medium tracking-tight mb-12 text-stone-800">
+      イベント参加実績 / 予定
+    </h2>
+
+    <!-- イベントカード一覧 -->
+    <div class="grid md:grid-cols-3 gap-8">
+      {events.map((event) => {
+        const status = getEventStatus(event.startDate, event.endDate);
+        const displayDate = formatDateRange(event.startDate, event.endDate);
+
+        return (
+          <a
+            href={event.url}
+            class="event-card block group"
+            target={event.url.startsWith('http') ? '_blank' : '_self'}
+            rel={event.url.startsWith('http') ? 'noopener noreferrer' : ''}
+          >
+            <div class="p-8 bg-white border border-stone-200 rounded-3xl 
+                        hover:border-[#4f6a5e] hover:shadow-2xl hover:-translate-y-2 
+                        transition-all duration-300 h-full flex flex-col">
+              
+              <!-- ステータスと日付 -->
+              <div class="flex items-center justify-between mb-6">
+                <div class={`text-xs px-4 py-1.5 rounded-full font-medium ${getStatusClass(status)}`}>
+                  {status}
+                </div>
+                <div class="text-xs text-stone-500 font-mono tracking-wider">
+                  {displayDate}
+                </div>
+              </div>
+
+              <!-- イベントタイトル -->
+              <h3 class="font-medium text-xl leading-tight group-hover:text-[#4f6a5e] transition-colors">
+                {event.title}
+              </h3>
+
+              <!-- 説明文 -->
+              <div class="text-stone-600 text-[15px] leading-relaxed flex-1 space-y-2 mt-4">
+                {event.description.map((line, i) => (
+                  <p key={i}>{line}</p>
+                ))}
+              </div>
+
+            </div>
+          </a>
+        );
+      })}
+    </div>
+
+
+  </div>
+</div>
+
+<!-- Island用クライアントスクリプト -->
+<script>
+  // イベントカードクリック時の軽いフィードバック
+  document.querySelectorAll('.event-card').forEach((card) => {
+    card.addEventListener('click', () => {
+      card.style.transform = 'scale(0.97)';
+      setTimeout(() => {
+        card.style.transform = 'scale(1)';
+      }, 180);
+    });
+  });
+
+
+</script>

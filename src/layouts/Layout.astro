@@ -1,0 +1,55 @@
+---
+// レイアウトコンポーネント (BlogPostLayout.astro)
+import '../styles/global.css';
+// Markdownファイルのフロントマターからデータを受け取る
+const { frontmatter } = Astro.props;
+---
+
+---
+// src/layouts/Layout.astro（共通レイアウト）
+---
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>{Astro.props.title}</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Playfair+Display:wght@400;700&display=swap');
+    
+    :root { --tw-color-primary: #4f6a5e; }
+    body { font-family: 'Inter', system-ui, sans-serif; }
+    h1, h2, h3 { font-family: 'Playfair Display', serif; }
+    .hero-bg { background: #f8f5f0; }
+    .nav-link { position: relative; }
+    .nav-link:after {
+      content: '';
+      position: absolute;
+      bottom: -2px;
+      left: 0;
+      width: 0;
+      height: 2px;
+      background: #4f6a5e;
+      transition: width 0.3s ease;
+    }
+    .nav-link:hover:after { width: 100%; }
+    .section { scroll-margin-top: 80px; }
+  </style>
+</head>
+<body class="bg-[#f8f5f0] text-stone-800 overflow-x-hidden antialiased">
+  <slot />
+  
+  <script>
+    // グローバルスムーススクロール（全ページ共通）
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+      anchor.addEventListener('click', e => {
+        const target = document.querySelector(anchor.getAttribute('href'));
+        if (target) {
+          e.preventDefault();
+          target.scrollIntoView({ behavior: 'smooth' });
+        }
+      });
+    });
+  </script>
+</body>
+</html>

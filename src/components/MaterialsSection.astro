@@ -1,0 +1,32 @@
+<div id="materials" class="section py-28 bg-white" data-island>
+  <div class="max-w-screen-2xl mx-auto px-10 text-center">
+    <div class="max-w-md mx-auto">
+      <span class="uppercase text-xs tracking-widest text-stone-400">SHOP</span>
+      <h2 class="text-5xl font-medium mt-3 tracking-tight">ハンドメイド資材</h2>
+      <p class="mt-6 text-stone-600">ジェルワックスや顔料など、少量からご購入いただけます。</p>
+      
+      <div class="flex justify-center gap-6 mt-12">
+        <a 
+          href="https://mercari-shops.com/shops/JXp9LskbtDh3UE42i6DQdJ" 
+          target="_blank"
+          class="materials-btn group flex-1 max-w-[280px] py-7 px-10 
+                 bg-white border-2 border-stone-400 rounded-3xl 
+                 hover:border-[#4f6a5e] hover:bg-[#f8f5f0] hover:shadow-xl hover:-translate-y-1 
+                 transition-all duration-300 text-lg font-medium text-stone-800
+                 active:scale-[0.97]">
+          メルカリShops
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  // Island専用軽いインタラクション
+  document.querySelectorAll('.materials-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      btn.style.transform = 'scale(0.95)';
+      setTimeout(() => btn.style.transform = 'scale(1)', 150);
+    });
+  });
+</script>

@@ -1,0 +1,35 @@
+---
+/* 
+  src/components/HeroSection.astro
+  HOMEタブ専用のヒーローセクション（Island化）
+*/
+
+const title = '大雪クラフターズキャラバン';
+---
+
+<div id="hero" class="section relative overflow-hidden" data-island>
+  <!-- 最背面のヒーロー画像 -->
+  <div class="absolute inset-0 z-0">
+    <img 
+      src="https://picsum.photos/id/1015/2000/1200" 
+      alt="ジオードキャンドル"
+      class="w-full h-full object-cover brightness-[0.65] scale-105"
+    >
+    <!-- オーバーレイ -->
+    <div class="absolute inset-0 bg-gradient-to-r from-[#f8f5f0]/90 via-[#f8f5f0]/10 to-transparent"></div>
+    <div class="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-[#f8f5f0]/10"></div>
+  </div>
+
+  <!-- テキストコンテンツ -->
+  <div class="relative z-10 min-h-screen flex items-center">
+    <div class="max-w-screen-2xl mx-auto px-10 pt-20 pb-32 w-full">
+      <div class="max-w-2xl">
+        
+        <h1 class="text-[4.8rem] md:text-[5.5rem] leading-[1.05] font-medium tracking-[-2px] text-stone-900">
+          自然の美しさを<br>キャンドルに
+        </h1>
+      </div>
+    </div>
+  </div>
+</div>
+

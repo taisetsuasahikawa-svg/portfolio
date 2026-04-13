@@ -1,0 +1,58 @@
+---
+/* 
+  src/components/AppSection.astro
+  役割：アプリ開発セクションを独立Island化
+  特徴：アプリカードに軽いインタラクション（クリックで機能リスト展開）を追加
+*/
+---
+
+<div id="apps" class="section py-28 bg-white" data-island>
+  <div class="max-w-screen-2xl mx-auto px-10">
+    <div class="flex justify-between items-baseline mb-16">
+      <h2 class="text-5xl font-medium tracking-tight">アプリ開発</h2>
+      <a href="#" class="text-[#4f6a5e] hover:underline">GitHub →</a>
+    </div>
+    
+    <div class="grid md:grid-cols-12 gap-12 items-center">
+      <div class="md:col-span-5">
+        <div class="bg-stone-900 text-white p-10 rounded-3xl hover:scale-[1.02] transition-transform cursor-pointer" id="app-card">
+          <div class="flex justify-between mb-6">
+            <span class="px-4 py-1 text-xs bg-white/10 rounded-3xl">Android / Kotlin</span>
+            <span class="text-4xl">📦</span>
+          </div>
+          <h3 class="text-4xl font-medium">Stockly - 在庫管理アプリ</h3>
+          <p class="mt-6 text-stone-300">
+            小規模事業者向けシンプル在庫管理ツール。バーコードスキャン、自動通知、オフライン対応。
+          </p>
+        </div>
+      </div>
+      
+      <div class="md:col-span-7">
+        <p class="text-stone-600 text-lg max-w-lg mb-6">開発中・構想中プロジェクト</p>
+        <div id="features-list" class="space-y-3">
+          <div class="px-5 py-4 bg-white border border-dashed rounded-3xl text-sm cursor-pointer hover:border-[#4f6a5e]">
+            キャンドル在庫連動管理システム
+          </div>
+          <div class="px-5 py-4 bg-white border border-dashed rounded-3xl text-sm cursor-pointer hover:border-[#4f6a5e]">
+            Etsy自動出品ツール
+          </div>
+          <div class="px-5 py-4 bg-white border border-dashed rounded-3xl text-sm cursor-pointer hover:border-[#4f6a5e]">
+            香りレシピ管理アプリ
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  // Island専用インタラクション（クリックで軽く強調）
+  const card = document.getElementById('app-card');
+  if (card) {
+    card.addEventListener('click', () => {
+      card.style.transform = 'scale(1.05)';
+      setTimeout(() => card.style.transform = 'scale(1.02)', 200);
+      console.log('📱 Stocklyアプリ詳細を表示（Island動作確認）');
+    });
+  }
+</script>
