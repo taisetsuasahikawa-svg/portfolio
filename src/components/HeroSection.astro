@@ -1,10 +1,8 @@
 ---
-/* 
-  src/components/HeroSection.astro
-  HOMEタブ専用のヒーローセクション（Island化）
-*/
+import { getLangFromUrl, useTranslations } from '../i18n/utils';
 
-const title = '大雪クラフターズキャラバン';
+const lang = getLangFromUrl(Astro.url);
+const t = useTranslations(lang);
 ---
 
 <div id="hero" class="section relative overflow-hidden" data-island>
@@ -12,7 +10,7 @@ const title = '大雪クラフターズキャラバン';
   <div class="absolute inset-0 z-0">
     <img 
       src="https://picsum.photos/id/1015/2000/1200" 
-      alt="ジオードキャンドル"
+      alt={lang === 'en' ? "Geode Candle" : "ジオードキャンドル"}
       class="w-full h-full object-cover brightness-[0.65] scale-105"
     >
     <!-- オーバーレイ -->
@@ -24,12 +22,13 @@ const title = '大雪クラフターズキャラバン';
   <div class="relative z-10 min-h-screen flex items-center">
     <div class="max-w-screen-2xl mx-auto px-10 pt-20 pb-32 w-full">
       <div class="max-w-2xl">
-        
-        <h1 class="text-[4.8rem] md:text-[5.5rem] leading-[1.05] font-medium tracking-[-2px] text-stone-900">
-          自然の美しさを<br>キャンドルに
+        <h1 class="text-[4.8rem] md:text-[5.5rem] leading-[1.05] font-medium tracking-[-2px] text-stone-900 whitespace-pre-line">
+          {t('hero.title')}
         </h1>
+        <p class="mt-6 text-xl md:text-2xl text-stone-700 tracking-wide">
+          {t('hero.subtitle')}
+        </p>
       </div>
     </div>
   </div>
 </div>
-

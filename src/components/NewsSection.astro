@@ -1,46 +1,59 @@
 ---
+import { getLangFromUrl, useTranslations } from '../i18n/utils';
+
+const lang = getLangFromUrl(Astro.url);
+const t = useTranslations(lang);
+
 const newsItems = [
   {
     date: "2026.04.05",
-    title: "新作ジオードキャンドル「アメジストの雫」発売開始",
-    description: "深い紫色のグラデーションと本物のアメジストパウダーを使用した限定キャンドル。minneとEtsyにて販売中。",
+    title: lang === 'en' 
+      ? "New Geode Candle 'Amethyst Drop' Now Available" 
+      : "新作ジオードキャンドル「アメジストの雫」発売開始",
+    description: lang === 'en'
+      ? "Limited candle with deep purple gradient and real amethyst powder. Available on minne and Etsy."
+      : "深い紫色のグラデーションと本物のアメジストパウダーを使用した限定キャンドル。minneとEtsyにて販売中。",
     link: "https://minne.com/@tcc2024",
-    tag: "新作"
+    tag: lang === 'en' ? "New" : "新作"
   },
   {
     date: "2026.03.15",
-    title: "Stockly 在庫管理アプリ β版をGitHubで公開",
-    description: "キャンドル在庫と連動したシンプルな在庫管理ツール。オフライン対応とバーコードスキャン機能を搭載。",
+    title: lang === 'en' 
+      ? "Stockly Inventory App β Released on GitHub" 
+      : "Stockly 在庫管理アプリ β版をGitHubで公開",
+    description: lang === 'en'
+      ? "Simple inventory tool linked with candle stock. Supports offline mode and barcode scanning."
+      : "キャンドル在庫と連動したシンプルな在庫管理ツール。オフライン対応とバーコードスキャン機能を搭載。",
     link: "#",
-    tag: "アプリ"
+    tag: lang === 'en' ? "App" : "アプリ"
   },
   {
     date: "2026.02.28",
-    title: "ハンドメイドマルシェ出展のお知らせ",
-    description: "2026年5月開催の札幌ハンドメイドマルシェへの出展が決定しました。詳細はイベントページをご覧ください。",
+    title: lang === 'en' 
+      ? "Exhibiting at Sapporo Handmade Marché" 
+      : "ハンドメイドマルシェ出展のお知らせ",
+    description: lang === 'en'
+      ? "We will exhibit at the Sapporo Handmade Marché in May 2026. See event page for details."
+      : "2026年5月開催の札幌ハンドメイドマルシェへの出展が決定しました。詳細はイベントページをご覧ください。",
     link: "#events",
-    tag: "イベント"
+    tag: lang === 'en' ? "Event" : "イベント"
   },
-
 ];
 
 function getTagClass(tag: string): string {
-  if (tag === "新作") return "bg-[#4f6a5e] text-white";
-  if (tag === "アプリ") return "bg-blue-600 text-white";
-  if (tag === "イベント") return "bg-amber-500 text-white";
+  if (tag === "新作" || tag === "New") return "bg-[#4f6a5e] text-white";
+  if (tag === "アプリ" || tag === "App") return "bg-blue-600 text-white";
+  if (tag === "イベント" || tag === "Event") return "bg-amber-500 text-white";
   return "bg-stone-100 text-stone-500";
 }
 ---
 
 <div id="news" class="section py-20 bg-[#f8f5f0]" data-island>
   <div class="max-w-screen-2xl mx-auto px-10">
-    
-    <!-- セクションタイトル -->
     <h2 class="text-5xl font-medium tracking-tight mb-12 text-stone-800">
-      News
+      {t('news.title')}
     </h2>
 
-    <!-- ニュースカード一覧 -->
     <div class="grid md:grid-cols-3 gap-8">
       {newsItems.map((item) => (
         <a
@@ -53,7 +66,6 @@ function getTagClass(tag: string): string {
                       hover:border-[#4f6a5e] hover:shadow-2xl hover:-translate-y-2 
                       transition-all duration-300 h-full flex flex-col">
             
-            <!-- 日付とタグ -->
             <div class="flex items-center justify-between mb-6">
               <div class="text-xs text-stone-500 font-mono tracking-wider">
                 {item.date}
@@ -63,35 +75,25 @@ function getTagClass(tag: string): string {
               </div>
             </div>
 
-            <!-- タイトル -->
             <h3 class="font-medium text-xl leading-tight group-hover:text-[#4f6a5e] transition-colors mb-4">
               {item.title}
             </h3>
 
-            <!-- 説明文 -->
             <div class="text-stone-600 text-[15px] leading-relaxed flex-1">
               {item.description}
             </div>
-
           </div>
         </a>
       ))}
     </div>
-
-
   </div>
 </div>
 
-<!-- Island用クライアントスクリプト -->
 <script>
-  // ニュースカードクリック時の軽いフィードバック（EventsSectionと統一）
   document.querySelectorAll('.news-card').forEach((card) => {
     card.addEventListener('click', () => {
       card.style.transform = 'scale(0.97)';
-      setTimeout(() => {
-        card.style.transform = 'scale(1)';
-      }, 180);
+      setTimeout(() => card.style.transform = 'scale(1)', 180);
     });
   });
-
 </script>

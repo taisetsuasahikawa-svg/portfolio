@@ -14,6 +14,9 @@ export default defineConfig({
       prefixDefaultLocale: false         // 日本語は /portfolio/ のまま、英語は /portfolio/en/
     }
   },
+  fallback: {
+      en: "ja", // 英語ページがない場合は日本語を表示
+    },
   vite: {
     plugins: [tailwindcss()]
   },

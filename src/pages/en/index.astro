@@ -1,13 +1,13 @@
 ---
-import Layout from '../layouts/Layout.astro';
-import HeroSection from '../components/HeroSection.astro';
-import NewsSection from '../components/NewsSection.astro';
-import CandleSection from '../components/CandleSection.astro';
-import AppSection from '../components/AppSection.astro';
-import MaterialsSection from '../components/MaterialsSection.astro';
-import EventsSection from '../components/EventsSection.astro';
+import Layout from '../../layouts/Layout.astro';
+import HeroSection from '../../components/HeroSection.astro';
+import NewsSection from '../../components/NewsSection.astro';
+import CandleSection from '../../components/CandleSection.astro';
+import AppSection from '../../components/AppSection.astro';
+import MaterialsSection from '../../components/MaterialsSection.astro';
+import EventsSection from '../../components/EventsSection.astro';
 
-import { getLangFromUrl, useTranslations, getRelativePath } from '../i18n/utils';
+import { getLangFromUrl, useTranslations, getRelativePath } from '../../i18n/utils';
 
 const lang = getLangFromUrl(Astro.url);
 const t = useTranslations(lang);

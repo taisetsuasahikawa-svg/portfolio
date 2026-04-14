@@ -1,59 +1,71 @@
 ---
-/* 
-  src/components/CandleSection.astro
-  更新：タグ複数対応 + 検索＆絞り込み機能追加（2026年4月版）
-*/
-
 import WorkCard from './WorkCard.astro';
+import { getLangFromUrl, useTranslations } from '../i18n/utils';
+
+const lang = getLangFromUrl(Astro.url);
+const t = useTranslations(lang);
 
 const candles = [
   {
-    title: "ジオードキャンドル",
-    description: "大きな水晶ジオードをかたどったキャンドル。全7種。自然の鉱物を忠実に再現。",
+    title: lang === 'en' ? "Geode Candle" : "ジオードキャンドル",
+    description: lang === 'en'
+      ? "Large candles modeled after natural crystal geodes. 7 types available."
+      : "大きな水晶ジオードをかたどったキャンドル。全7種。自然の鉱物を忠実に再現。",
     image: "/portfolio/images/candles/geode_candle_bpy.png",
     href: "#",
-    tags: ["ジオード系"]
+    tags: ["geode"]
   },
   {
-    title: "鉱物キャンドル",
-    description: "球形に磨いた鉱物のような個性的なキャンドル。新作は随時追加予定。",
+    title: lang === 'en' ? "Mineral Candle" : "鉱物キャンドル",
+    description: lang === 'en'
+      ? "Unique spherical candles resembling polished minerals. New items added regularly."
+      : "球形に磨いた鉱物のような個性的なキャンドル。新作は随時追加予定。",
     image: "/portfolio/images/candles/rock_candles_allcolor.jpg",
     href: "#",
-    tags: ["鉱物系"]
+    tags: ["mineral"]
   },
   {
-    title: "クリスタルキャンドル",
-    description: "水晶クラスターから型取りしたキャンドル。全7種。透明感が美しい。",
+    title: lang === 'en' ? "Crystal Candle" : "クリスタルキャンドル",
+    description: lang === 'en'
+      ? "Candles cast from quartz clusters. 7 types with beautiful transparency."
+      : "水晶クラスターから型取りしたキャンドル。全7種。透明感が美しい。",
     image: "/portfolio/images/candles/chrystal_candle_b.jpg",
     href: "#",
-    tags: ["クリスタル"]
+    tags: ["crystal"]
   },
   {
-    title: "ミニジオードキャンドル",
-    description: "ジオードキャンドルを1/4サイズに凝縮したミニバージョン。ギフトにも最適。",
+    title: lang === 'en' ? "Mini Geode Candle" : "ミニジオードキャンドル",
+    description: lang === 'en'
+      ? "1/4 scale version of the Geode Candle. Perfect as a gift."
+      : "ジオードキャンドルを1/4サイズに凝縮したミニバージョン。ギフトにも最適。",
     image: "/portfolio/images/candles/mini_geode_candle_allcolors.jpg",
     href: "#",
-    tags: ["ジオード系"]
+    tags: ["geode"]
   },
-  // 新しい作品はここに追加してください（tagsは任意）
+  // 新しい作品を追加する場合はここに同じ形式で書いてください
 ];
 ---
+
 <div id="candles" class="section py-28 bg-white" data-island>
   <div class="max-w-screen-2xl mx-auto px-10">
     
     <!-- ヘッダー -->
     <div class="flex flex-col md:flex-row justify-between items-start md:items-baseline gap-6 mb-12">
       <div>
-        <h2 class="text-5xl font-medium tracking-tight">キャンドル作品一覧</h2>
-        <p class="text-stone-600 mt-2">自然の鉱物をイメージしたオリジナルキャンドル</p>
+        <h2 class="text-5xl font-medium tracking-tight text-stone-800">
+          {t('section.candles')}
+        </h2>
+        <p class="text-stone-600 mt-2">
+          {t('section.candles.desc')}
+        </p>
       </div>
       
       <div class="flex flex-col gap-3">
         <a href="https://minne.com/@tcc2024" target="_blank" class="text-[#4f6a5e] hover:underline text-lg inline-flex items-center gap-2">
-          minneで作品を見る →
+          {lang === 'en' ? "View on minne →" : "minneで作品を見る →"}
         </a>
         <a href="https://www.etsy.com/shop/MineralArtCandlesJP" target="_blank" class="text-[#4f6a5e] hover:underline text-lg inline-flex items-center gap-2">
-          etsyで作品を見る →
+          {lang === 'en' ? "View on Etsy →" : "etsyで作品を見る →"}
         </a>
       </div>
     </div>
@@ -66,10 +78,9 @@ const candles = [
           <input 
             id="search-input"
             type="text" 
-            placeholder="作品名や説明で検索..." 
+            placeholder={t('candle.search.placeholder')}
             class="w-full px-6 py-4 bg-white border border-stone-200 rounded-3xl focus:outline-none focus:border-[#4f6a5e] text-base placeholder:text-stone-400 pr-14"
           >
-          <!-- シンプルな虫眼鏡ボタン -->
           <button 
             type="submit"
             id="search-button"
@@ -89,7 +100,7 @@ const candles = [
       <!-- クリアボタン -->
       <button id="clear-filters" 
               class="px-6 py-3 text-sm font-medium border border-stone-300 hover:border-[#4f6a5e] rounded-3xl transition-colors whitespace-nowrap">
-        フィルターをクリア
+        {t('button.clear')}
       </button>
     </div>
 
@@ -109,7 +120,10 @@ const candles = [
           <div class="flex flex-wrap gap-2 mt-4 px-1">
             {candle.tags.map((tag) => (
               <span class="inline-block px-4 py-1 text-xs bg-[#4f6a5e]/10 text-[#4f6a5e] rounded-full font-medium">
-                #{tag}
+                #{lang === 'en' ? tag.charAt(0).toUpperCase() + tag.slice(1) : 
+                  tag === 'geode' ? 'ジオード系' : 
+                  tag === 'mineral' ? '鉱物系' : 
+                  tag === 'crystal' ? 'クリスタル' : tag}
               </span>
             ))}
           </div>
@@ -120,30 +134,48 @@ const candles = [
 </div>
 
 <script>
+  // ====================== 変数取得 ======================
   const searchInput = document.getElementById('search-input');
   const searchForm = document.getElementById('search-form');
   const tagFiltersContainer = document.getElementById('tag-filters');
   const clearButton = document.getElementById('clear-filters');
   const candleCards = document.querySelectorAll('.candle-card');
 
+  // 利用可能なタグを収集
   let allTags = [];
   candleCards.forEach(card => {
     const tags = card.dataset.tags ? card.dataset.tags.split(',') : [];
     allTags = [...new Set([...allTags, ...tags])];
   });
 
+  // タグ表示名（言語対応・安全策）
+  const tagDisplayNames = {
+    geode:   { ja: 'ジオード系', en: 'Geode Series' },
+    mineral: { ja: '鉱物系', en: 'Mineral Series' },
+    crystal: { ja: 'クリスタル', en: 'Crystal Series' }
+  };
+
+  function getDisplayName(tagKey) {
+    const currentLang = document.documentElement.lang === 'en' ? 'en' : 'ja';
+    return tagDisplayNames[tagKey]?.[currentLang] || tagKey;
+  }
+
+  // ====================== タグボタン生成 ======================
   function renderTagFilters() {
     tagFiltersContainer.innerHTML = '';
-    allTags.forEach(tag => {
+
+    allTags.forEach(tagKey => {
       const btn = document.createElement('button');
-      btn.textContent = `#${tag}`;
+      const displayName = getDisplayName(tagKey);
+      
+      btn.textContent = `#${displayName}`;
       btn.className = `tag-btn px-5 py-2 text-sm font-medium rounded-3xl border border-stone-200 hover:border-[#4f6a5e] transition-all active:scale-95`;
-      btn.dataset.tag = tag;
+      btn.dataset.tag = tagKey;        // フィルター用は英語キー（小文字）のまま
       tagFiltersContainer.appendChild(btn);
     });
   }
 
-  // フィルタリング関数
+  // ====================== フィルター処理 ======================
   function filterCandles() {
     const query = searchInput.value.toLowerCase().trim();
     const activeTags = Array.from(tagFiltersContainer.querySelectorAll('.tag-btn.active'))
@@ -154,28 +186,25 @@ const candles = [
       const desc = card.dataset.description || '';
       const cardTags = card.dataset.tags ? card.dataset.tags.split(',') : [];
 
-      const matchesSearch = !query || 
-                            title.includes(query) || 
-                            desc.includes(query);
-
-      const matchesTags = activeTags.length === 0 || 
-                          activeTags.every(tag => cardTags.includes(tag));
+      const matchesSearch = !query || title.includes(query) || desc.includes(query);
+      const matchesTags = activeTags.length === 0 || activeTags.every(tag => cardTags.includes(tag));
 
       card.style.display = (matchesSearch && matchesTags) ? 'block' : 'none';
     });
   }
 
+  // ====================== 初期化 ======================
   function initFilters() {
     renderTagFilters();
 
-    // フォーム送信時（虫眼鏡ボタンクリック or Enterキー）
+    // 検索フォーム
     searchForm.addEventListener('submit', (e) => {
       e.preventDefault();
       filterCandles();
-      searchInput.blur();   // 入力中のフォーカスを外す
+      searchInput.blur();
     });
 
-    // タグクリック時
+    // タグクリック
     tagFiltersContainer.addEventListener('click', (e) => {
       if (e.target.classList.contains('tag-btn')) {
         e.target.classList.toggle('active');
@@ -186,7 +215,7 @@ const candles = [
       }
     });
 
-    // すべて表示ボタン
+    // クリアボタン
     clearButton.addEventListener('click', () => {
       searchInput.value = '';
       document.querySelectorAll('.tag-btn').forEach(btn => {
@@ -196,7 +225,15 @@ const candles = [
     });
   }
 
-  document.addEventListener('DOMContentLoaded', initFilters);
+  // Astro Island で確実に実行されるようにする
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initFilters);
+  } else {
+    initFilters();
+  }
+
+  // デバッグ用（必要なければ削除可）
+  console.log('✅ CandleSection script loaded - Tags:', allTags);
 </script>
 
 <style>

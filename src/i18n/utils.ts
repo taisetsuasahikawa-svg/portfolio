@@ -1,22 +1,28 @@
+// src/i18n/utils.ts
 import { ui, defaultLang } from './ui';
 
-export function getLangFromUrl(url: URL): keyof typeof ui {
-  const [, lang] = url.pathname.split('/');
-  if (lang === 'en') return 'en';
-  return defaultLang;
+export function getLangFromUrl(url: URL): 'ja' | 'en' {
+  const pathname = url.pathname;
+
+  // base: '/portfolio' を考慮した安全な判定
+  if (pathname.includes('/en/') || pathname.endsWith('/en')) {
+    return 'en';
+  }
+
+  return 'ja'; // デフォルトは常に日本語
 }
 
-export function useTranslations(lang: keyof typeof ui) {
-  return function t(key: keyof typeof ui[typeof defaultLang]) {
-    return ui[lang][key] || ui[defaultLang][key] || key;
+export function useTranslations(lang: 'ja' | 'en') {
+  return function t(key: keyof typeof ui['ja']) {
+    // 安全に翻訳を取得（見つからなければキー名を返す）
+    return ui[lang]?.[key] ?? ui[defaultLang]?.[key] ?? key;
   };
 }
 
-// 言語切り替えリンク生成用
-export function getRelativePath(url: URL, targetLang: 'ja' | 'en'): string {
-  const path = url.pathname.replace(/^\/portfolio(\/en)?/, '');
+export function getRelativePath(currentUrl: URL, targetLang: 'ja' | 'en'): string {
+  const base = '/portfolio';
   if (targetLang === 'en') {
-    return `/portfolio/en${path}`;
+    return `${base}/en`;
   }
-  return `/portfolio${path}`;
+  return base;
 }

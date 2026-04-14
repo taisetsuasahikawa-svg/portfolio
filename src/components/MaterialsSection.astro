@@ -1,9 +1,24 @@
+---
+import { getLangFromUrl, useTranslations } from '../i18n/utils';
+
+const lang = getLangFromUrl(Astro.url);
+const t = useTranslations(lang);
+---
+
 <div id="materials" class="section py-28 bg-white" data-island>
   <div class="max-w-screen-2xl mx-auto px-10 text-center">
     <div class="max-w-md mx-auto">
-      <span class="uppercase text-xs tracking-widest text-stone-400">SHOP</span>
-      <h2 class="text-5xl font-medium mt-3 tracking-tight">ハンドメイド資材</h2>
-      <p class="mt-6 text-stone-600">ジェルワックスや顔料など、少量からご購入いただけます。</p>
+      <span class="uppercase text-xs tracking-widest text-stone-400">
+        {lang === 'en' ? "SHOP" : "SHOP"}
+      </span>
+      <h2 class="text-5xl font-medium mt-3 tracking-tight text-stone-800">
+        {t('section.materials')}
+      </h2>
+      <p class="mt-6 text-stone-600">
+        {lang === 'en' 
+          ? "Gel wax, pigments, and other handmade materials available in small quantities."
+          : "ジェルワックスや顔料など、少量からご購入いただけます。"}
+      </p>
       
       <div class="flex justify-center gap-6 mt-12">
         <a 
@@ -14,7 +29,7 @@
                  hover:border-[#4f6a5e] hover:bg-[#f8f5f0] hover:shadow-xl hover:-translate-y-1 
                  transition-all duration-300 text-lg font-medium text-stone-800
                  active:scale-[0.97]">
-          メルカリShops
+          {lang === 'en' ? "Mercari Shops" : "メルカリShops"}
         </a>
       </div>
     </div>
@@ -22,7 +37,6 @@
 </div>
 
 <script>
-  // Island専用軽いインタラクション
   document.querySelectorAll('.materials-btn').forEach(btn => {
     btn.addEventListener('click', () => {
       btn.style.transform = 'scale(0.95)';
