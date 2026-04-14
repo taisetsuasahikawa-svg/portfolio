@@ -18,7 +18,7 @@ export const ui = {
     'section.apps': 'アプリ開発',
     'section.materials': 'ハンドメイド資材販売',
     'section.news': 'News',
-    'section.events': 'イベント参加実績 / 今後の予定',
+    'section.events': 'イベント',
 
     // ボタン類
     'button.view': 'VIEW',
