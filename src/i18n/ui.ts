@@ -1,4 +1,4 @@
-// src/i18n/ui.ts（または現在の ui.ts）
+export const defaultLang = 'ja';
 export const ui = {
   ja: {
     // ナビゲーション
