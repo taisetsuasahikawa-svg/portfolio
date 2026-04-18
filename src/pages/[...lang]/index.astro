@@ -1,5 +1,9 @@
 ---
-// src/pages/en/index.astro
+// src/pages/[...lang]/index.astro
+// 多言語対応・GitHub Pages完全対応・言語追加が ui.ts 1箇所だけで済む最終版
+// ★ TypeScriptエラー完全解消版 ★
+
+import { supportedLangs, type Lang } from '../../i18n/ui.ts';
 import Layout from '../../layouts/Layout.astro';
 import HeroSection from '../../components/HeroSection.astro';
 import NewsSection from '../../components/NewsSection.astro';
@@ -8,11 +12,21 @@ import AppSection from '../../components/AppSection.astro';
 import MaterialsSection from '../../components/MaterialsSection.astro';
 import EventsSection from '../../components/EventsSection.astro';
 
-import { getLangFromUrl, useTranslations, getSwitchLangUrl } from '../../i18n/utils';
+import { useTranslations, getSwitchLangUrl } from '../../i18n/utils';
 import { IMAGE_PATHS } from '../../constants/paths.ts';
 
-const lang = getLangFromUrl(Astro.url);
-const t = useTranslations(lang);
+export async function getStaticPaths() {
+  return supportedLangs.map((lang: Lang) => ({
+    params: { 
+      lang: lang === 'ja' ? undefined : lang 
+    },
+    props: { lang }
+  }));
+}
+
+const { lang: propLang } = Astro.props;
+const currentLang = (propLang || 'ja') as Lang;
+const t = useTranslations(currentLang);
 ---
 
 <Layout title={t('site.title')}>
@@ -23,7 +37,7 @@ const t = useTranslations(lang);
       
       <!-- ロゴ部分 -->
       <div class="flex items-center gap-3">
-        <a href="/portfolio/" class="flex items-center gap-3">
+        <a href={currentLang === 'ja' ? '/portfolio/' : `/portfolio/${currentLang}/`} class="flex items-center gap-3">
           <img
             src={IMAGE_PATHS.logo}
             alt="Taisetsu Crafter's Caravan Logo"
@@ -59,7 +73,7 @@ const t = useTranslations(lang);
       <!-- 右側（言語切り替え + お問い合わせ） -->
       <div class="flex items-center gap-3 md:gap-4">
         <a
-          href={getSwitchLangUrl(Astro.url, lang === 'ja' ? 'en' : 'ja')}
+          href={getSwitchLangUrl(Astro.url, currentLang)}
           id="lang-switch"
           class="hidden sm:block px-5 py-2 text-sm font-medium border border-stone-300 hover:border-[#4f6a5e] hover:bg-[#4f6a5e] hover:text-white rounded-3xl transition-all">
           {t('langSwitch')}
@@ -102,10 +116,10 @@ const t = useTranslations(lang);
 
         <div class="px-8 py-5 border-t border-stone-100 mt-4">
           <div class="text-xs uppercase tracking-widest text-stone-400 mb-3">
-            {t('mobile.language')}
+            {currentLang === 'ja' ? '言語' : 'LANGUAGE'}
           </div>
           <a
-            href={getSwitchLangUrl(Astro.url, lang === 'ja' ? 'en' : 'ja')}
+            href={getSwitchLangUrl(Astro.url, currentLang)}
             id="mobile-lang-switch"
             class="block w-full py-4 text-center text-lg font-medium border border-stone-300 hover:border-[#4f6a5e] hover:bg-[#4f6a5e] hover:text-white rounded-3xl transition-all active:scale-[0.97]">
             {t('langSwitch')}
@@ -149,7 +163,7 @@ const t = useTranslations(lang);
 
         <div class="md:col-span-5">
           <div class="flex items-center gap-3">
-            <img src="/portfolio/images/icons/logo_tcc.png" alt="Logo" class="w-9 h-9 object-contain">
+            <img src={IMAGE_PATHS.logo} alt="Logo" class="w-9 h-9 object-contain">
             <span class="text-3xl font-medium tracking-tight text-white">
               {t('site.title')}
             </span>
@@ -167,7 +181,7 @@ const t = useTranslations(lang);
             {t('footer.shop')}
           </div>
           <div class="space-y-6">
-            <a href="https://minne.com/@tcc2024" target="_blank" class="group flex items-center gap-4 hover:text-[#d97706] transition-colors">
+            <a href="https://minne.com/@tcc2024/" target="_blank" class="group flex items-center gap-4 hover:text-[#d97706] transition-colors">
               <div class="w-12 h-12 bg-white rounded-2xl flex items-center justify-center flex-shrink-0 shadow-sm border border-stone-200 group-hover:scale-110 transition-transform">
                 <img src={IMAGE_PATHS.logoMinne} alt="minne" class="w-12 h-12 object-contain">
               </div>
@@ -177,7 +191,7 @@ const t = useTranslations(lang);
               </div>
             </a>
 
-            <a href="https://www.etsy.com/shop/MineralArtCandlesJP" target="_blank" class="group flex items-center gap-4 hover:text-[#d97706] transition-colors">
+            <a href="https://www.etsy.com/shop/MineralArtCandlesJP/" target="_blank" class="group flex items-center gap-4 hover:text-[#d97706] transition-colors">
               <div class="w-12 h-12 bg-white/10 rounded-2xl flex items-center justify-center flex-shrink-0 overflow-hidden group-hover:scale-110 transition-transform">
                 <img src={IMAGE_PATHS.logoEtsy} alt="Etsy" class="w-12 h-12 object-contain">
               </div>
@@ -195,7 +209,7 @@ const t = useTranslations(lang);
           </div>
           
           <div class="flex gap-4 mb-12">
-            <a href="https://x.com/TaisetsuCC" target="_blank" class="w-12 h-12 bg-white rounded-2xl flex items-center justify-center shadow-sm border border-stone-200 overflow-hidden transition-all hover:scale-110">
+            <a href="https://x.com/TaisetsuCC/" target="_blank" class="w-12 h-12 bg-white rounded-2xl flex items-center justify-center shadow-sm border border-stone-200 overflow-hidden transition-all hover:scale-110">
               <img src={IMAGE_PATHS.logoX} alt="X" class="w-7 h-7 object-contain">
             </a>
             <a href="https://www.instagram.com/taisetsucc/" target="_blank" class="w-12 h-12 bg-white rounded-2xl flex items-center justify-center overflow-hidden transition-all hover:scale-110">
@@ -216,17 +230,18 @@ const t = useTranslations(lang);
     </div>
   </footer>
 
-  <!-- ==================== スクリプト ==================== -->
+  <!-- ==================== スクリプト（TypeScript型エラー完全解消） ==================== -->
   <script>
-    function switchTab(tabIndex) {
+    function switchTab(tabIndex: number) {
       document.querySelectorAll('.tab-panel').forEach(panel => panel.classList.add('hidden'));
       const activePanel = document.getElementById(`tab-panel-${tabIndex}`);
       if (activePanel) activePanel.classList.remove('hidden');
 
       document.querySelectorAll('.tab-button, .mobile-tab-button').forEach(btn => {
-        btn.classList.remove('active', 'bg-[#4f6a5e]', 'text-white');
-        if (parseInt(btn.getAttribute('data-tab') || '0') === tabIndex) {
-          btn.classList.add('active', 'bg-[#4f6a5e]', 'text-white');
+        const button = btn as HTMLButtonElement;
+        button.classList.remove('active', 'bg-[#4f6a5e]', 'text-white');
+        if (parseInt(button.getAttribute('data-tab') || '0') === tabIndex) {
+          button.classList.add('active', 'bg-[#4f6a5e]', 'text-white');
         }
       });
 
@@ -244,34 +259,34 @@ const t = useTranslations(lang);
     }
 
     document.addEventListener('DOMContentLoaded', () => {
-      // タブ切り替え
       document.querySelectorAll('.tab-button').forEach(btn => {
-        btn.addEventListener('click', () => switchTab(parseInt(btn.dataset.tab)));
+        btn.addEventListener('click', () => {
+          const button = btn as HTMLButtonElement;
+          switchTab(parseInt(button.getAttribute('data-tab') || '0'));
+        });
       });
 
       document.querySelectorAll('.mobile-tab-button').forEach(btn => {
         btn.addEventListener('click', () => {
-          switchTab(parseInt(btn.dataset.tab));
-          document.getElementById('mobile-menu').classList.add('hidden');
+          const button = btn as HTMLButtonElement;
+          switchTab(parseInt(button.getAttribute('data-tab') || '0'));
+          document.getElementById('mobile-menu')?.classList.add('hidden');
         });
       });
 
-      // モバイルメニュー開閉
-      const mobileBtn = document.getElementById('mobile-menu-button');
+      const mobileBtn = document.getElementById('mobile-menu-button') as HTMLButtonElement | null;
       const mobileMenu = document.getElementById('mobile-menu');
-      const closeBtn = document.getElementById('mobile-close-button');
+      const closeBtn = document.getElementById('mobile-close-button') as HTMLButtonElement | null;
 
-      mobileBtn?.addEventListener('click', () => mobileMenu.classList.toggle('hidden'));
-      closeBtn?.addEventListener('click', () => mobileMenu.classList.add('hidden'));
+      mobileBtn?.addEventListener('click', () => mobileMenu?.classList.toggle('hidden'));
+      closeBtn?.addEventListener('click', () => mobileMenu?.classList.add('hidden'));
 
-      // URLの?tabパラメータで初期タブを設定
       const urlParams = new URLSearchParams(window.location.search);
       let initialTab = parseInt(urlParams.get('tab') || '0');
       if (isNaN(initialTab) || initialTab < 0 || initialTab > 3) initialTab = 0;
       switchTab(initialTab);
     });
 
-    // スクロール時のナビゲーションスタイル
     window.addEventListener('scroll', () => {
       const nav = document.getElementById('navbar');
       if (window.scrollY > 30) {

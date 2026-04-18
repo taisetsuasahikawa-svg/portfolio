@@ -1,54 +1,57 @@
 // src/i18n/utils.ts
-import { ui } from './ui.ts';
-
-export type Lang = 'ja' | 'en';   // 将来 'zh' | 'ko' などを追加するだけ
-
-const defaultLang: Lang = 'ja';
-
-export function getLangFromUrl(url: URL): Lang {
-  const path = url.pathname;
-  if (path.startsWith('/en/') || path === '/en') return 'en';
-  return 'ja';
-}
+import { ui, supportedLangs, type Lang } from './ui.ts';
 
 export function useTranslations(lang: Lang) {
   return function t(key: string): string {
     const keys = key.split('.');
     let current: any = ui;
-
-    for (const k of keys) {
-      if (typeof current !== 'object' || current === null) {
-        console.warn(`[i18n] 翻訳キーが見つかりません: ${key}`);
-        return key;
-      }
-      current = current[k];
-    }
-
-    if (typeof current === 'object' && current !== null) {
-      return (current as any)[lang] ?? (current as any).ja ?? key;
-    }
-
-    console.warn(`[i18n] 翻訳キーが不正です: ${key}`);
-    return key;
+    for (const k of keys) current = current?.[k];
+    return current?.[lang] ?? current?.ja ?? key;
   };
 }
 
-// === 言語切り替え用URL生成関数（シンプル版）===
-export function getSwitchLangUrl(currentUrl: URL, targetLang: Lang): string {
-  const pathname = currentUrl.pathname;
-  const search = currentUrl.search;        // ?tab=1 などを保持
+// ==================== URLから現在の言語を取得（Layout.astro用） ====================
+export function getLangFromUrl(url: URL): Lang {
+  const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+  let pathname = url.pathname.replace(base, '');
+  pathname = pathname.replace(/^\/+/, '').replace(/\/$/, '');
 
-  // 現在の言語プレフィックスを除去
-  let newPath = pathname
-    .replace(/^\/en\/?/, '/')   // /en/ や /en を / に
-    .replace(/^\/ja\/?/, '/');  // 念のためjaも除去
+  const segments = pathname.split('/');
+  const langSegment = segments[0];
 
-  if (newPath === '') newPath = '/';
+  // supportedLangs に含まれる言語コードなら返す（jaは省略されるのでデフォルト）
+  if (langSegment && supportedLangs.includes(langSegment as Lang)) {
+    return langSegment as Lang;
+  }
+  return 'ja';
+}
 
-  // 対象言語が英語なら /en を付ける
-  if (targetLang === 'en') {
-    newPath = newPath === '/' ? '/en' : `/en${newPath}`;
+// ==================== 完全自動言語切り替え ====================
+export function getSwitchLangUrl(currentUrl: URL, currentLang: Lang): string {
+  const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+  let pathname = currentUrl.pathname;
+
+  // 現在の言語コードを除去
+  pathname = pathname
+    .replace(/^\/portfolio\/(en|ko|zh|fr|de)\//, '/portfolio/')
+    .replace(/\/$/, '');
+
+  if (pathname === '' || pathname === '/portfolio') pathname = '/portfolio';
+
+  // 次の言語を自動で決定（循環する）
+  const currentIndex = supportedLangs.indexOf(currentLang);
+  const nextIndex = (currentIndex + 1) % supportedLangs.length;
+  const nextLang = supportedLangs[nextIndex];
+
+  let newPath: string;
+  if (nextLang === 'ja') {
+    newPath = '/portfolio/';
+  } else {
+    newPath = `/portfolio/${nextLang}/`;
   }
 
-  return `/portfolio${newPath}${search}`;
+  let fullUrl = (base + newPath.replace(/^\/portfolio/, '')).replace(/\/+/g, '/');
+  if (!fullUrl.endsWith('/')) fullUrl += '/';
+
+  return fullUrl + currentUrl.search;
 }

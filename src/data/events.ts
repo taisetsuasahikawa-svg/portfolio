@@ -29,7 +29,7 @@ export const eventsRaw = [
   {
     startDate: "2025.05.24",
     endDate: "2025.05.25",
-    url: "https://spr.handmade-marche.jp/history",
+    url: "https://spr.handmade-marche.jp/history/",
     title: {
       ja: "札幌ハンドメイドマルシェ2025",
       en: "Sapporo Handmade Marché 2025"

@@ -15,7 +15,7 @@ export const appsRaw = [
     },
     platform: "Android",
     status: "inDevelopment" as const,
-    github: "https://github.com/taisetsuasahikawa-svg/smartstock",
+    github: "https://github.com/taisetsuasahikawa-svg/smartstock/",
     tags: ["inventory", "barcode"] as const,
   },
   {

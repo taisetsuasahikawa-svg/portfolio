@@ -167,7 +167,7 @@ const t = useTranslations(lang);
             {t('footer.shop')}
           </div>
           <div class="space-y-6">
-            <a href="https://minne.com/@tcc2024" target="_blank" class="group flex items-center gap-4 hover:text-[#d97706] transition-colors">
+            <a href="https://minne.com/@tcc2024/" target="_blank" class="group flex items-center gap-4 hover:text-[#d97706] transition-colors">
               <div class="w-12 h-12 bg-white rounded-2xl flex items-center justify-center flex-shrink-0 shadow-sm border border-stone-200 group-hover:scale-110 transition-transform">
                 <img src={IMAGE_PATHS.logoMinne} alt="minne" class="w-12 h-12 object-contain">
               </div>
@@ -177,7 +177,7 @@ const t = useTranslations(lang);
               </div>
             </a>
 
-            <a href="https://www.etsy.com/shop/MineralArtCandlesJP" target="_blank" class="group flex items-center gap-4 hover:text-[#d97706] transition-colors">
+            <a href="https://www.etsy.com/shop/MineralArtCandlesJP/" target="_blank" class="group flex items-center gap-4 hover:text-[#d97706] transition-colors">
               <div class="w-12 h-12 bg-white/10 rounded-2xl flex items-center justify-center flex-shrink-0 overflow-hidden group-hover:scale-110 transition-transform">
                 <img src={IMAGE_PATHS.logoEtsy} alt="Etsy" class="w-12 h-12 object-contain">
               </div>
@@ -195,7 +195,7 @@ const t = useTranslations(lang);
           </div>
           
           <div class="flex gap-4 mb-12">
-            <a href="https://x.com/TaisetsuCC" target="_blank" class="w-12 h-12 bg-white rounded-2xl flex items-center justify-center shadow-sm border border-stone-200 overflow-hidden transition-all hover:scale-110">
+            <a href="https://x.com/TaisetsuCC/" target="_blank" class="w-12 h-12 bg-white rounded-2xl flex items-center justify-center shadow-sm border border-stone-200 overflow-hidden transition-all hover:scale-110">
               <img src={IMAGE_PATHS.logoX} alt="X" class="w-7 h-7 object-contain">
             </a>
             <a href="https://www.instagram.com/taisetsucc/" target="_blank" class="w-12 h-12 bg-white rounded-2xl flex items-center justify-center overflow-hidden transition-all hover:scale-110">

@@ -4,22 +4,23 @@ import tailwindcss from '@tailwindcss/vite';
 
 export default defineConfig({
   site: 'https://taisetsuasahikawa-svg.github.io',
-  base: '/portfolio',   
+  base: '/portfolio/',
+  trailingSlash: 'always',
   output: 'static',
 
   i18n: {
-    defaultLocale: 'ja',                 // 日本語をデフォルト
-    locales: ['ja', 'en'],               // サポート言語
+    defaultLocale: 'ja',
+    locales: ['ja', 'en'],
     routing: {
-      prefixDefaultLocale: false         // 日本語は /portfolio/ のまま、英語は /portfolio/en/
+      prefixDefaultLocale: false
+    },
+    fallback: {
+      en: "ja"
     }
   },
-  fallback: {
-      en: "ja", // 英語ページがない場合は日本語を表示
-    },
   vite: {
     plugins: [tailwindcss()]
   },
 
-  trailingSlash: 'never',
+  
 });

@@ -1,5 +1,6 @@
 // src/i18n/ui.ts
-
+export const supportedLangs = ['ja', 'en'] as const;   // ← ここに 'zh', 'fr' などを追加
+export type Lang = typeof supportedLangs[number];
 export const ui = {
   // ==================== ページ全体共通 ====================
   site: {
