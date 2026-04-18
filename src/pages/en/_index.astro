@@ -1,21 +1,69 @@
 ---
-// src/pages/index.astro
-import Layout from '../layouts/Layout.astro';
-import HeroSection from '../components/HeroSection.astro';
-import NewsSection from '../components/NewsSection.astro';
-import CandleSection from '../components/CandleSection.astro';
-import AppSection from '../components/AppSection.astro';
-import MaterialsSection from '../components/MaterialsSection.astro';
-import EventsSection from '../components/EventsSection.astro';
+import Layout from '../../layouts/Layout.astro';
+import HeroSection from '../../components/HeroSection.astro';
+import NewsSection from '../../components/NewsSection.astro';
+import CandleSection from '../../components/CandleSection.astro';
+import AppSection from '../../components/AppSection.astro';
+import MaterialsSection from '../../components/MaterialsSection.astro';
+import EventsSection from '../../components/EventsSection.astro';
 
-import { getLangFromUrl, useTranslations, getSwitchLangUrl } from '../i18n/utils';
-import { IMAGE_PATHS } from '../constants/paths.ts';
+import { getLangFromUrl } from '../../i18n/utils';
 
 const lang = getLangFromUrl(Astro.url);
-const t = useTranslations(lang);
+
+// ==================== すべての翻訳テキストをここにまとめて記述 ====================
+const texts = {
+  title: {
+    ja: '大雪クラフターズキャラバン',
+    en: "Taisetsu Crafter's Caravan"
+  },
+
+  nav: {
+    home:     { ja: 'HOME',     en: 'HOME' },
+    candles:  { ja: 'キャンドル', en: 'Candles' },
+    apps:     { ja: 'アプリ',    en: 'Apps' },
+    materials:{ ja: 'ハンドメイド資材', en: 'Materials' },
+    contact:  { ja: 'お問い合わせ', en: 'Contact' }
+  },
+
+  langSwitch: {
+    ja: 'English',
+    en: '日本語'
+  },
+
+  footer: {
+    description: {
+      ja: 'IT技術を駆使して自然を表現する、新しいキャンドル作りを目指しています。',
+      en: 'We aim to create new candles that express the beauty of nature using IT technology.'
+    },
+    copyright: {
+      ja: '© 2026 Taisetsu Crafter\'s Caravan',
+      en: '© 2026 Taisetsu Crafter\'s Caravan'
+    },
+    shop:     { ja: 'SHOP',     en: 'SHOP' },
+    follow:   { ja: 'FOLLOW US', en: 'FOLLOW US' },
+    contact:  { ja: 'CONTACT',  en: 'CONTACT' }
+  },
+
+  mobile: {
+    language: { ja: '言語', en: 'LANGUAGE' }
+  }
+} as const;
+
+// 簡単 t 関数
+const t = (path: string) => {
+  const keys = path.split('.');
+  let current: any = texts;
+  for (const key of keys) {
+    current = current[key];
+    if (!current) return path;
+  }
+  return current[lang] ?? current.ja ?? path;
+};
+// =================================================================================
 ---
 
-<Layout title={t('site.title')}>
+<Layout title={texts.title[lang]}>
 
   <!-- ==================== NAVBAR ==================== -->
   <nav id="navbar" class="sticky top-0 z-50 bg-[#f8f5f0]/80 backdrop-blur-lg border-b border-stone-200 transition-all duration-300">
@@ -25,16 +73,16 @@ const t = useTranslations(lang);
       <div class="flex items-center gap-3">
         <a href="/portfolio/" class="flex items-center gap-3">
           <img
-            src={IMAGE_PATHS.logo}
+            src="/portfolio/images/icons/logo_tcc.png"
             alt="Taisetsu Crafter's Caravan Logo"
             class="w-9 h-9 md:w-11 md:h-11 object-contain drop-shadow-sm"
           >
           <div>
             <span class="text-2xl md:text-3xl font-medium tracking-tighter text-stone-900">
-              {t('site.title')}
+              {texts.title[lang]}
             </span>
             <p class="text-[9px] md:text-[10px] text-stone-500 -mt-1 tracking-[1px]">
-              {t('site.subtitle')}
+              NATURE × TECHNOLOGY × CANDLE
             </p>
           </div>
         </a>
@@ -58,17 +106,21 @@ const t = useTranslations(lang);
       
       <!-- 右側（言語切り替え + お問い合わせ） -->
       <div class="flex items-center gap-3 md:gap-4">
+        <!-- 言語切り替え -->
         <a
-          href={getSwitchLangUrl(Astro.url, lang === 'ja' ? 'en' : 'ja')}
+          href={lang === 'en' 
+            ? `/portfolio${Astro.url.pathname.replace(/^\/portfolio\/en/, '')}?tab=0`
+            : `/portfolio/en${Astro.url.pathname.replace(/^\/portfolio(\/en)?/, '')}?tab=0`}
           id="lang-switch"
           class="hidden sm:block px-5 py-2 text-sm font-medium border border-stone-300 hover:border-[#4f6a5e] hover:bg-[#4f6a5e] hover:text-white rounded-3xl transition-all">
-          {t('langSwitch')}
+          {texts.langSwitch[lang]}
         </a>
 
         <a href="#contact" class="hidden sm:block px-6 py-2.5 text-sm font-medium border border-stone-300 hover:border-[#4f6a5e] hover:bg-[#4f6a5e] hover:text-white rounded-3xl transition-all">
           {t('nav.contact')}
         </a>
         
+        <!-- モバイルメニューボタン -->
         <button id="mobile-menu-button"
                 class="md:hidden w-11 h-11 flex items-center justify-center text-3xl text-stone-700 hover:text-[#4f6a5e] transition-colors">
           ☰
@@ -100,15 +152,16 @@ const t = useTranslations(lang);
           {t('nav.materials')}
         </button>
 
+        <!-- モバイル内言語切り替え -->
         <div class="px-8 py-5 border-t border-stone-100 mt-4">
           <div class="text-xs uppercase tracking-widest text-stone-400 mb-3">
             {t('mobile.language')}
           </div>
           <a
-            href={getSwitchLangUrl(Astro.url, lang === 'ja' ? 'en' : 'ja')}
+            href={lang === 'en' ? `/portfolio?tab=0` : `/portfolio/en?tab=0`}
             id="mobile-lang-switch"
             class="block w-full py-4 text-center text-lg font-medium border border-stone-300 hover:border-[#4f6a5e] hover:bg-[#4f6a5e] hover:text-white rounded-3xl transition-all active:scale-[0.97]">
-            {t('langSwitch')}
+            {texts.langSwitch[lang]}
           </a>
         </div>
       </div>
@@ -123,23 +176,29 @@ const t = useTranslations(lang);
 
   <!-- ==================== メインコンテンツ ==================== -->
   <div class="max-w-screen-2xl mx-auto px-6 md:px-10" id="tab-content">
+
+    <!-- TAB 0: HOME -->
     <div id="tab-panel-0" class="tab-panel">
       <HeroSection client:load />
       <NewsSection client:load />
       <EventsSection client:load />
     </div>
 
+    <!-- TAB 1: キャンドル -->
     <div id="tab-panel-1" class="tab-panel hidden">
       <CandleSection client:load />
     </div>
 
+    <!-- TAB 2: アプリ -->
     <div id="tab-panel-2" class="tab-panel hidden">
       <AppSection client:load />
     </div>
 
+    <!-- TAB 3: ハンドメイド資材 -->
     <div id="tab-panel-3" class="tab-panel hidden">
       <MaterialsSection client:load />
     </div>
+
   </div>
 
   <!-- ==================== FOOTER ==================== -->
@@ -147,11 +206,12 @@ const t = useTranslations(lang);
     <div class="max-w-screen-2xl mx-auto px-10">
       <div class="grid md:grid-cols-12 gap-12">
 
+        <!-- 左側：ブランド情報 -->
         <div class="md:col-span-5">
           <div class="flex items-center gap-3">
-            <img src={IMAGE_PATHS.logo} alt="Logo" class="w-9 h-9 object-contain">
+            <img src="/portfolio/images/icons/logo_tcc.png" alt="Logo" class="w-9 h-9 object-contain">
             <span class="text-3xl font-medium tracking-tight text-white">
-              {t('site.title')}
+              {texts.title[lang]}
             </span>
           </div>
           <p class="mt-8 text-stone-400 max-w-sm leading-relaxed">
@@ -162,14 +222,16 @@ const t = useTranslations(lang);
           </p>
         </div>
 
+        <!-- 中央：SHOP -->
         <div class="md:col-span-4">
           <div class="font-medium mb-6 text-[#d97706] tracking-widest text-sm">
             {t('footer.shop')}
           </div>
+          
           <div class="space-y-6">
             <a href="https://minne.com/@tcc2024" target="_blank" class="group flex items-center gap-4 hover:text-[#d97706] transition-colors">
               <div class="w-12 h-12 bg-white rounded-2xl flex items-center justify-center flex-shrink-0 shadow-sm border border-stone-200 group-hover:scale-110 transition-transform">
-                <img src={IMAGE_PATHS.logoMinne} alt="minne" class="w-12 h-12 object-contain">
+                <img src="/portfolio/images/icons/logo_minne.png" alt="minne" class="w-12 h-12 object-contain">
               </div>
               <div>
                 <div class="font-medium text-lg">minne</div>
@@ -179,7 +241,7 @@ const t = useTranslations(lang);
 
             <a href="https://www.etsy.com/shop/MineralArtCandlesJP" target="_blank" class="group flex items-center gap-4 hover:text-[#d97706] transition-colors">
               <div class="w-12 h-12 bg-white/10 rounded-2xl flex items-center justify-center flex-shrink-0 overflow-hidden group-hover:scale-110 transition-transform">
-                <img src={IMAGE_PATHS.logoEtsy} alt="Etsy" class="w-12 h-12 object-contain">
+                <img src="/portfolio/images/icons/logo_Etsy.png" alt="Etsy" class="w-12 h-12 object-contain">
               </div>
               <div>
                 <div class="font-medium text-lg">Etsy</div>
@@ -189,6 +251,7 @@ const t = useTranslations(lang);
           </div>
         </div>
 
+        <!-- 右側：FOLLOW US -->
         <div class="md:col-span-3 flex flex-col">
           <div class="font-medium mb-6 text-[#d97706] tracking-widest text-sm">
             {t('footer.follow')}
@@ -196,10 +259,10 @@ const t = useTranslations(lang);
           
           <div class="flex gap-4 mb-12">
             <a href="https://x.com/TaisetsuCC" target="_blank" class="w-12 h-12 bg-white rounded-2xl flex items-center justify-center shadow-sm border border-stone-200 overflow-hidden transition-all hover:scale-110">
-              <img src={IMAGE_PATHS.logoX} alt="X" class="w-7 h-7 object-contain">
+              <img src="/portfolio/images/icons/logo_x_black.png" alt="X" class="w-7 h-7 object-contain">
             </a>
             <a href="https://www.instagram.com/taisetsucc/" target="_blank" class="w-12 h-12 bg-white rounded-2xl flex items-center justify-center overflow-hidden transition-all hover:scale-110">
-              <img src={IMAGE_PATHS.logoInstagram} alt="Instagram" class="w-9 h-9 object-contain">
+              <img src="/portfolio/images/icons/logo_Instagram.png" alt="Instagram" class="w-9 h-9 object-contain">
             </a>
           </div>
 
@@ -208,7 +271,7 @@ const t = useTranslations(lang);
               {t('footer.contact')}
             </div>
             <a href="mailto:taisetsu.asahikawa@gmail.com" class="w-12 h-12 bg-white rounded-2xl flex items-center justify-center overflow-hidden transition-all hover:scale-110">
-              <img src={IMAGE_PATHS.mailIcon} alt="mail" class="w-12 h-12 object-contain scale-200">
+              <img src="/portfolio/images/icons/mail.png" alt="mail" class="w-12 h-12 object-contain scale-200">
             </a>
           </div>
         </div>
@@ -218,6 +281,7 @@ const t = useTranslations(lang);
 
   <!-- ==================== スクリプト ==================== -->
   <script>
+    // ...（既存のタブ切り替え・モバイルメニュー・スクロール処理はそのまま）...
     function switchTab(tabIndex) {
       document.querySelectorAll('.tab-panel').forEach(panel => panel.classList.add('hidden'));
       const activePanel = document.getElementById(`tab-panel-${tabIndex}`);
@@ -235,16 +299,12 @@ const t = useTranslations(lang);
         const target = document.getElementById(`tab-panel-${tabIndex}`);
         if (target) {
           const rect = target.getBoundingClientRect();
-          window.scrollTo({ 
-            top: window.pageYOffset + rect.top - navbarHeight, 
-            behavior: 'smooth' 
-          });
+          window.scrollTo({ top: window.pageYOffset + rect.top - navbarHeight, behavior: 'smooth' });
         }
       }, 80);
     }
 
     document.addEventListener('DOMContentLoaded', () => {
-      // タブ切り替え
       document.querySelectorAll('.tab-button').forEach(btn => {
         btn.addEventListener('click', () => switchTab(parseInt(btn.dataset.tab)));
       });
@@ -261,23 +321,22 @@ const t = useTranslations(lang);
       const mobileMenu = document.getElementById('mobile-menu');
       const closeBtn = document.getElementById('mobile-close-button');
 
-      mobileBtn?.addEventListener('click', () => mobileMenu.classList.toggle('hidden'));
-      closeBtn?.addEventListener('click', () => mobileMenu.classList.add('hidden'));
+      mobileBtn.addEventListener('click', () => mobileMenu.classList.toggle('hidden'));
+      closeBtn.addEventListener('click', () => mobileMenu.classList.add('hidden'));
 
-      // URLの?tabパラメータで初期タブを設定
+      // 初期タブ
       const urlParams = new URLSearchParams(window.location.search);
       let initialTab = parseInt(urlParams.get('tab') || '0');
       if (isNaN(initialTab) || initialTab < 0 || initialTab > 3) initialTab = 0;
       switchTab(initialTab);
     });
 
-    // スクロール時のナビゲーションスタイル
     window.addEventListener('scroll', () => {
       const nav = document.getElementById('navbar');
       if (window.scrollY > 30) {
-        nav?.classList.add('bg-[#f8f5f0]', 'shadow-sm');
+        nav.classList.add('bg-[#f8f5f0]', 'shadow-sm');
       } else {
-        nav?.classList.remove('bg-[#f8f5f0]', 'shadow-sm');
+        nav.classList.remove('bg-[#f8f5f0]', 'shadow-sm');
       }
     });
   </script>

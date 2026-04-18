@@ -1,4 +1,5 @@
 ---
+// src/pages/en/index.astro
 import Layout from '../../layouts/Layout.astro';
 import HeroSection from '../../components/HeroSection.astro';
 import NewsSection from '../../components/NewsSection.astro';
@@ -7,36 +8,33 @@ import AppSection from '../../components/AppSection.astro';
 import MaterialsSection from '../../components/MaterialsSection.astro';
 import EventsSection from '../../components/EventsSection.astro';
 
-import { getLangFromUrl, useTranslations, getRelativePath } from '../../i18n/utils';
+import { getLangFromUrl, useTranslations, getSwitchLangUrl } from '../../i18n/utils';
+import { IMAGE_PATHS } from '../../constants/paths.ts';
 
 const lang = getLangFromUrl(Astro.url);
 const t = useTranslations(lang);
-
-const title = lang === 'en' 
-  ? "Taisetsu Crafter's Caravan" 
-  : '大雪クラフターズキャラバン';
 ---
 
-<Layout title={title}>
+<Layout title={t('site.title')}>
+
   <!-- ==================== NAVBAR ==================== -->
-  <nav id="navbar"
-       class="sticky top-0 z-50 bg-[#f8f5f0]/80 backdrop-blur-lg border-b border-stone-200 transition-all duration-300">
+  <nav id="navbar" class="sticky top-0 z-50 bg-[#f8f5f0]/80 backdrop-blur-lg border-b border-stone-200 transition-all duration-300">
     <div class="max-w-screen-2xl mx-auto px-6 md:px-10 py-4 md:py-5 flex items-center justify-between">
       
       <!-- ロゴ部分 -->
       <div class="flex items-center gap-3">
         <a href="/portfolio/" class="flex items-center gap-3">
           <img
-            src="/portfolio/images/icons/logo_tcc.png"
+            src={IMAGE_PATHS.logo}
             alt="Taisetsu Crafter's Caravan Logo"
             class="w-9 h-9 md:w-11 md:h-11 object-contain drop-shadow-sm"
           >
           <div>
             <span class="text-2xl md:text-3xl font-medium tracking-tighter text-stone-900">
-              {lang === 'en' ? "Taisetsu Crafter's Caravan" : '大雪クラフターズキャラバン'}
+              {t('site.title')}
             </span>
             <p class="text-[9px] md:text-[10px] text-stone-500 -mt-1 tracking-[1px]">
-              NATURE × TECHNOLOGY × CANDLE
+              {t('site.subtitle')}
             </p>
           </div>
         </a>
@@ -60,19 +58,17 @@ const title = lang === 'en'
       
       <!-- 右側（言語切り替え + お問い合わせ） -->
       <div class="flex items-center gap-3 md:gap-4">
-        <!-- 言語切り替え -->
-        <a 
-          href={getRelativePath(Astro.url, lang === 'ja' ? 'en' : 'ja')}
-          class="hidden sm:block px-5 py-2 text-sm font-medium border border-stone-300 hover:border-[#4f6a5e] hover:bg-[#4f6a5e] hover:text-white rounded-3xl transition-all"
-        >
-          {lang === 'ja' ? 'English' : '日本語'}
+        <a
+          href={getSwitchLangUrl(Astro.url, lang === 'ja' ? 'en' : 'ja')}
+          id="lang-switch"
+          class="hidden sm:block px-5 py-2 text-sm font-medium border border-stone-300 hover:border-[#4f6a5e] hover:bg-[#4f6a5e] hover:text-white rounded-3xl transition-all">
+          {t('langSwitch')}
         </a>
 
         <a href="#contact" class="hidden sm:block px-6 py-2.5 text-sm font-medium border border-stone-300 hover:border-[#4f6a5e] hover:bg-[#4f6a5e] hover:text-white rounded-3xl transition-all">
           {t('nav.contact')}
         </a>
         
-        <!-- モバイルメニュー -->
         <button id="mobile-menu-button"
                 class="md:hidden w-11 h-11 flex items-center justify-center text-3xl text-stone-700 hover:text-[#4f6a5e] transition-colors">
           ☰
@@ -82,14 +78,10 @@ const title = lang === 'en'
   </nav>
 
   <!-- ==================== モバイルメニュー ==================== -->
-  <div id="mobile-menu" 
-      class="hidden fixed inset-0 bg-black/0 backdrop-blur-2xl z-[9999] flex items-start justify-center pt-[env(safe-area-inset-top)] pb-12 overflow-y-auto">
-
+  <div id="mobile-menu" class="hidden fixed inset-0 bg-black/0 backdrop-blur-2xl z-[9999] flex items-start justify-center pt-[env(safe-area-inset-top)] pb-12 overflow-y-auto">
     <div class="bg-white w-[95%] max-w-[420px] mx-auto mt-4 rounded-3xl shadow-2xl overflow-hidden border border-stone-200">
-      
       <div class="flex justify-end px-6 py-4 border-b border-stone-100">
-        <button id="mobile-close-button" 
-                class="w-11 h-11 flex items-center justify-center text-3xl text-stone-400 hover:text-stone-700 transition-colors">
+        <button id="mobile-close-button" class="w-11 h-11 flex items-center justify-center text-3xl text-stone-400 hover:text-stone-700 transition-colors">
           ✕
         </button>
       </div>
@@ -110,19 +102,19 @@ const title = lang === 'en'
 
         <div class="px-8 py-5 border-t border-stone-100 mt-4">
           <div class="text-xs uppercase tracking-widest text-stone-400 mb-3">
-            {lang === 'en' ? 'LANGUAGE' : '言語'}
+            {t('mobile.language')}
           </div>
-          <a 
-            href={getRelativePath(Astro.url, lang === 'en' ? 'ja' : 'en')}
+          <a
+            href={getSwitchLangUrl(Astro.url, lang === 'ja' ? 'en' : 'ja')}
+            id="mobile-lang-switch"
             class="block w-full py-4 text-center text-lg font-medium border border-stone-300 hover:border-[#4f6a5e] hover:bg-[#4f6a5e] hover:text-white rounded-3xl transition-all active:scale-[0.97]">
-            {lang === 'en' ? '日本語' : 'English'}
+            {t('langSwitch')}
           </a>
         </div>
       </div>
 
       <div class="p-6 border-t border-stone-100">
-        <a href="#contact"
-          class="block w-full py-5 text-center text-lg font-medium bg-[#4f6a5e] hover:bg-[#3f554a] text-white rounded-3xl active:scale-[0.97] transition-all">
+        <a href="#contact" class="block w-full py-5 text-center text-lg font-medium bg-[#4f6a5e] hover:bg-[#3f554a] text-white rounded-3xl active:scale-[0.97] transition-all">
           {t('nav.contact')}
         </a>
       </div>
@@ -131,47 +123,23 @@ const title = lang === 'en'
 
   <!-- ==================== メインコンテンツ ==================== -->
   <div class="max-w-screen-2xl mx-auto px-6 md:px-10" id="tab-content">
-
-    <!-- TAB 0: HOME -->
     <div id="tab-panel-0" class="tab-panel">
       <HeroSection client:load />
       <NewsSection client:load />
       <EventsSection client:load />
     </div>
 
-    <!-- TAB 1: キャンドル -->
     <div id="tab-panel-1" class="tab-panel hidden">
-      <div class="pt-16 md:pt-20 pb-10">
-        <h2 class="text-5xl md:text-6xl font-medium tracking-tight text-stone-800 mb-4">
-          {t('section.candles')}
-        </h2>
-        <p class="text-stone-600 text-lg md:text-xl">
-          {t('section.candles.desc')}
-        </p>
-      </div>
       <CandleSection client:load />
     </div>
 
-    <!-- TAB 2: アプリ -->
     <div id="tab-panel-2" class="tab-panel hidden">
-      <div class="pt-16 md:pt-20 pb-10">
-        <h2 class="text-5xl md:text-6xl font-medium tracking-tight text-stone-800">
-          {t('section.apps')}
-        </h2>
-      </div>
       <AppSection client:load />
     </div>
 
-    <!-- TAB 3: ハンドメイド資材 -->
     <div id="tab-panel-3" class="tab-panel hidden">
-      <div class="pt-16 md:pt-20 pb-10">
-        <h2 class="text-5xl md:text-6xl font-medium tracking-tight text-stone-800">
-          {t('section.materials')}
-        </h2>
-      </div>
       <MaterialsSection client:load />
     </div>
-
   </div>
 
   <!-- ==================== FOOTER ==================== -->
@@ -179,16 +147,11 @@ const title = lang === 'en'
     <div class="max-w-screen-2xl mx-auto px-10">
       <div class="grid md:grid-cols-12 gap-12">
 
-        <!-- 左側：ブランド情報 -->
         <div class="md:col-span-5">
           <div class="flex items-center gap-3">
-            <img
-              src="/portfolio/images/icons/logo_tcc.png"
-              alt="Taisetsu Crafter's Caravan Logo"
-              class="w-9 h-9 object-contain"
-            >
+            <img src="/portfolio/images/icons/logo_tcc.png" alt="Logo" class="w-9 h-9 object-contain">
             <span class="text-3xl font-medium tracking-tight text-white">
-              {lang === 'en' ? "Taisetsu Crafter's Caravan" : '大雪クラフターズキャラバン'}
+              {t('site.title')}
             </span>
           </div>
           <p class="mt-8 text-stone-400 max-w-sm leading-relaxed">
@@ -199,51 +162,44 @@ const title = lang === 'en'
           </p>
         </div>
 
-        <!-- 中央：SHOP -->
         <div class="md:col-span-4">
           <div class="font-medium mb-6 text-[#d97706] tracking-widest text-sm">
             {t('footer.shop')}
           </div>
-          
           <div class="space-y-6">
-            <a href="https://minne.com/@tcc2024" target="_blank"
-               class="group flex items-center gap-4 hover:text-[#d97706] transition-colors">
+            <a href="https://minne.com/@tcc2024" target="_blank" class="group flex items-center gap-4 hover:text-[#d97706] transition-colors">
               <div class="w-12 h-12 bg-white rounded-2xl flex items-center justify-center flex-shrink-0 shadow-sm border border-stone-200 group-hover:scale-110 transition-transform">
-                <img src="/portfolio/images/icons/logo_minne.png" alt="minne" class="w-12 h-12 object-contain">
+                <img src={IMAGE_PATHS.logoMinne} alt="minne" class="w-12 h-12 object-contain">
               </div>
               <div>
                 <div class="font-medium text-lg">minne</div>
-                <div class="text-xs text-stone-400">{t('shop.minne.desc')}</div>
+                <div class="text-xs text-stone-400">日本最大級ハンドメイドマーケット</div>
               </div>
             </a>
 
-            <a href="https://www.etsy.com/shop/MineralArtCandlesJP" target="_blank"
-               class="group flex items-center gap-4 hover:text-[#d97706] transition-colors">
+            <a href="https://www.etsy.com/shop/MineralArtCandlesJP" target="_blank" class="group flex items-center gap-4 hover:text-[#d97706] transition-colors">
               <div class="w-12 h-12 bg-white/10 rounded-2xl flex items-center justify-center flex-shrink-0 overflow-hidden group-hover:scale-110 transition-transform">
-                <img src="/portfolio/images/icons/logo_Etsy.png" alt="Etsy" class="w-12 h-12 object-contain">
+                <img src={IMAGE_PATHS.logoEtsy} alt="Etsy" class="w-12 h-12 object-contain">
               </div>
               <div>
                 <div class="font-medium text-lg">Etsy</div>
-                <div class="text-xs text-stone-400">{t('shop.etsy.desc')}</div>
+                <div class="text-xs text-stone-400">Global Online Marketplace</div>
               </div>
             </a>
           </div>
         </div>
 
-        <!-- 右側：FOLLOW US -->
         <div class="md:col-span-3 flex flex-col">
           <div class="font-medium mb-6 text-[#d97706] tracking-widest text-sm">
             {t('footer.follow')}
           </div>
           
           <div class="flex gap-4 mb-12">
-            <a href="https://x.com/TaisetsuCC" target="_blank"
-               class="w-12 h-12 bg-white rounded-2xl flex items-center justify-center shadow-sm border border-stone-200 overflow-hidden transition-all hover:scale-110">
-              <img src="/portfolio/images/icons/logo_x_black.png" alt="X" class="w-7 h-7 object-contain">
+            <a href="https://x.com/TaisetsuCC" target="_blank" class="w-12 h-12 bg-white rounded-2xl flex items-center justify-center shadow-sm border border-stone-200 overflow-hidden transition-all hover:scale-110">
+              <img src={IMAGE_PATHS.logoX} alt="X" class="w-7 h-7 object-contain">
             </a>
-            <a href="https://www.instagram.com/taisetsucc/" target="_blank"
-               class="w-12 h-12 bg-white rounded-2xl flex items-center justify-center overflow-hidden transition-all hover:scale-110">
-              <img src="/portfolio/images/icons/logo_Instagram.png" alt="Instagram" class="w-9 h-9 object-contain">
+            <a href="https://www.instagram.com/taisetsucc/" target="_blank" class="w-12 h-12 bg-white rounded-2xl flex items-center justify-center overflow-hidden transition-all hover:scale-110">
+              <img src={IMAGE_PATHS.logoInstagram} alt="Instagram" class="w-9 h-9 object-contain">
             </a>
           </div>
 
@@ -251,13 +207,11 @@ const title = lang === 'en'
             <div class="font-medium mb-6 text-[#d97706] tracking-widest text-sm">
               {t('footer.contact')}
             </div>
-            <a href="mailto:taisetsu.asahikawa@gmail.com"
-               class="w-12 h-12 bg-white rounded-2xl flex items-center justify-center overflow-hidden transition-all hover:scale-110">
-              <img src="/portfolio/images/icons/mail.png" alt="mail" class="w-12 h-12 object-contain scale-200">
+            <a href="mailto:taisetsu.asahikawa@gmail.com" class="w-12 h-12 bg-white rounded-2xl flex items-center justify-center overflow-hidden transition-all hover:scale-110">
+              <img src={IMAGE_PATHS.mailIcon} alt="mail" class="w-12 h-12 object-contain scale-200">
             </a>
           </div>
         </div>
-
       </div>
     </div>
   </footer>
@@ -281,18 +235,20 @@ const title = lang === 'en'
         const target = document.getElementById(`tab-panel-${tabIndex}`);
         if (target) {
           const rect = target.getBoundingClientRect();
-          window.scrollTo({ top: window.pageYOffset + rect.top - navbarHeight, behavior: 'smooth' });
+          window.scrollTo({ 
+            top: window.pageYOffset + rect.top - navbarHeight, 
+            behavior: 'smooth' 
+          });
         }
       }, 80);
     }
 
     document.addEventListener('DOMContentLoaded', () => {
-      // デスクトップタブ
+      // タブ切り替え
       document.querySelectorAll('.tab-button').forEach(btn => {
         btn.addEventListener('click', () => switchTab(parseInt(btn.dataset.tab)));
       });
 
-      // モバイルタブ
       document.querySelectorAll('.mobile-tab-button').forEach(btn => {
         btn.addEventListener('click', () => {
           switchTab(parseInt(btn.dataset.tab));
@@ -305,30 +261,23 @@ const title = lang === 'en'
       const mobileMenu = document.getElementById('mobile-menu');
       const closeBtn = document.getElementById('mobile-close-button');
 
-      mobileBtn.addEventListener('click', () => {
-        mobileMenu.classList.toggle('hidden');
-      });
+      mobileBtn?.addEventListener('click', () => mobileMenu.classList.toggle('hidden'));
+      closeBtn?.addEventListener('click', () => mobileMenu.classList.add('hidden'));
 
-      closeBtn.addEventListener('click', () => {
-        mobileMenu.classList.add('hidden');
-      });
-
-      mobileMenu.addEventListener('click', (e) => {
-        if (e.target === mobileMenu) {
-          mobileMenu.classList.add('hidden');
-        }
-      });
-
-      switchTab(0); // 初期表示はHOME
+      // URLの?tabパラメータで初期タブを設定
+      const urlParams = new URLSearchParams(window.location.search);
+      let initialTab = parseInt(urlParams.get('tab') || '0');
+      if (isNaN(initialTab) || initialTab < 0 || initialTab > 3) initialTab = 0;
+      switchTab(initialTab);
     });
 
-    // スクロール時のナビ背景調整
+    // スクロール時のナビゲーションスタイル
     window.addEventListener('scroll', () => {
       const nav = document.getElementById('navbar');
       if (window.scrollY > 30) {
-        nav.classList.add('bg-[#f8f5f0]', 'shadow-sm');
+        nav?.classList.add('bg-[#f8f5f0]', 'shadow-sm');
       } else {
-        nav.classList.remove('bg-[#f8f5f0]', 'shadow-sm');
+        nav?.classList.remove('bg-[#f8f5f0]', 'shadow-sm');
       }
     });
   </script>

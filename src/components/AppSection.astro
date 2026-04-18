@@ -1,65 +1,119 @@
 ---
 import { getLangFromUrl, useTranslations } from '../i18n/utils';
+import { appsRaw, type AppRaw } from '../data/apps';
+import { IMAGE_PATHS } from '../constants/paths';
 
 const lang = getLangFromUrl(Astro.url);
 const t = useTranslations(lang);
+
+// アプリデータを現在の言語に変換 + 画像パスを id から取得
+const apps = appsRaw.map((app: AppRaw) => ({
+  ...app,
+  title: app.title[lang],
+  description: app.description[lang],
+  statusLabel: t(`appStatus.${app.status}`),
+  // id から画像パスを取得（constants/paths.ts で管理）
+  image: IMAGE_PATHS.apps[app.id] || `${import.meta.env.BASE_URL}images/apps/placeholder.jpg`,
+}));
+
+// 自動グラデーション（画像がない場合のフォールバック用）
+const gradients = [
+  "from-emerald-700 via-teal-700 to-cyan-800",
+  "from-amber-700 via-orange-700 to-red-800",
+  "from-purple-700 via-violet-700 to-fuchsia-800",
+  "from-rose-700 via-amber-700 to-yellow-800",
+  "from-blue-700 via-indigo-700 to-violet-800",
+  "from-lime-700 via-green-700 to-emerald-800",
+];
+
+function getAutoGradient(index: number): string {
+  return gradients[index % gradients.length];
+}
+
+// ステータスクラス（EventsSection と色体系を統一）
+function getStatusClass(statusKey: string): string {
+  if (statusKey === 'stable')        return "bg-emerald-600 text-white";
+  if (statusKey === 'beta')          return "bg-amber-500 text-white";
+  if (statusKey === 'inDevelopment') return "bg-blue-600 text-white";
+  if (statusKey === 'planning')      return "bg-stone-500 text-white";
+  return "bg-stone-500 text-white"; // fallback
+}
 ---
 
 <div id="apps" class="section py-28 bg-white" data-island>
   <div class="max-w-screen-2xl mx-auto px-10">
     <div class="flex justify-between items-baseline mb-16">
       <h2 class="text-5xl font-medium tracking-tight text-stone-800">
-        {t('section.apps')}
+        {t('app.section.title')}
       </h2>
-      <a href="https://github.com/taisetsuasahikawa-svg" 
-         target="_blank" 
-         class="text-[#4f6a5e] hover:underline text-lg inline-flex items-center gap-2">
-        GitHub →
+      <a 
+        href="https://github.com/taisetsuasahikawa-svg"
+        target="_blank"
+        class="text-[#4f6a5e] hover:underline text-lg inline-flex items-center gap-2">
+        {t('common.githubLink')}
       </a>
     </div>
-    
-    <div class="grid md:grid-cols-12 gap-12 items-center">
-      <div class="md:col-span-5">
-        <div class="bg-stone-900 text-white p-10 rounded-3xl hover:scale-[1.02] transition-transform cursor-pointer" id="app-card">
-          <div class="flex justify-between mb-6">
-            <span class="px-4 py-1 text-xs bg-white/10 rounded-3xl">Android / Kotlin</span>
-            <span class="text-4xl">📦</span>
-          </div>
-          <h3 class="text-4xl font-medium">Stockly - 在庫管理アプリ</h3>
-          <p class="mt-6 text-stone-300">
-            {lang === 'en' 
-              ? "Simple inventory management tool for small businesses. Supports barcode scanning, automatic notifications, and offline mode."
-              : "小規模事業者向けシンプル在庫管理ツール。バーコードスキャン、自動通知、オフライン対応。"}
-          </p>
+
+    <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+      {apps.map((app, index) => (
+        <div
+          class="app-card group block bg-white border border-stone-200 rounded-3xl overflow-hidden
+                 hover:border-[#4f6a5e] hover:shadow-2xl hover:-translate-y-2
+                 transition-all duration-300"
+        >
+          <a
+            href={app.github}
+            target={app.github.startsWith('http') && app.github !== "#" ? '_blank' : '_self'}
+            class="block"
+          >
+            <!-- 画像エリア -->
+            <div class="relative h-52 overflow-hidden">
+              <img
+                src={app.image}
+                alt={app.title}
+                class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';"
+              >
+              
+              <!-- 画像読み込み失敗時のグラデーション -->
+              <div class={`absolute inset-0 hidden flex-col items-center justify-center bg-gradient-to-br ${getAutoGradient(index)}`}>
+                <div class="text-white/90 text-center px-8">
+                  <div class="text-2xl font-medium tracking-tight mb-1">{app.title}</div>
+                  <div class="text-xs opacity-75 tracking-widest">{app.platform}</div>
+                </div>
+              </div>
+
+              <!-- プラットフォームバッジ -->
+              <span class="absolute top-4 left-4 px-4 py-1 text-xs font-medium bg-white/90 text-stone-800 rounded-3xl shadow-sm z-10">
+                {app.platform}
+              </span>
+              
+              <!-- ステータスタグ -->
+              <span class={`absolute top-4 right-4 px-4 py-1 text-xs font-medium rounded-3xl shadow-sm z-10 ${getStatusClass(app.status)}`}>
+                {app.statusLabel}
+              </span>
+            </div>
+
+            <div class="p-8">
+              <h3 class="text-2xl font-medium text-stone-900 group-hover:text-[#4f6a5e] transition-colors mb-2">
+                {app.title}
+              </h3>
+              <p class="text-stone-600 leading-relaxed text-[15px]">
+                {app.description}
+              </p>
+
+              <!-- タグ -->
+              <div class="flex flex-wrap gap-2 mt-6">
+                {app.tags.map((tag) => (
+                  <span class="text-xs px-3 py-1 bg-[#4f6a5e]/10 text-[#4f6a5e] rounded-3xl font-medium">
+                    #{tag}
+                  </span>
+                ))}
+              </div>
+            </div>
+          </a>
         </div>
-      </div>
-      
-      <div class="md:col-span-7">
-        <p class="text-stone-600 text-lg max-w-lg mb-6">
-          {lang === 'en' ? "Development / Planning Projects" : "開発中・構想中プロジェクト"}
-        </p>
-        <div id="features-list" class="space-y-3">
-          <div class="px-5 py-4 bg-white border border-dashed rounded-3xl text-sm cursor-pointer hover:border-[#4f6a5e]">
-            {lang === 'en' ? "Candle stock linkage management system" : "キャンドル在庫連動管理システム"}
-          </div>
-          <div class="px-5 py-4 bg-white border border-dashed rounded-3xl text-sm cursor-pointer hover:border-[#4f6a5e]">
-            {lang === 'en' ? "Etsy automatic listing tool" : "Etsy自動出品ツール"}
-          </div>
-          <div class="px-5 py-4 bg-white border border-dashed rounded-3xl text-sm cursor-pointer hover:border-[#4f6a5e]">
-            {lang === 'en' ? "Scent recipe management app" : "香りレシピ管理アプリ"}
-          </div>
-        </div>
-      </div>
+      ))}
     </div>
   </div>
 </div>
-
-<script>
-  const card = document.getElementById('app-card');
-  if (card) {
-    card.addEventListener('click', () => {
-      card.style.transform = 'scale(1.05)';
-      setTimeout(() => card.style.transform = 'scale(1.02)', 200);
-    });
-  }
-</script>

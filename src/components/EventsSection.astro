@@ -1,64 +1,58 @@
 ---
+// src/components/EventsSection.astro
 import { getLangFromUrl, useTranslations } from '../i18n/utils';
+import { eventsRaw } from '../data/events';
+import CardHover from '../ui/CardHover.astro';
 
 const lang = getLangFromUrl(Astro.url);
 const t = useTranslations(lang);
 
-const events = [
-  {
-    startDate: "2025.12.06",
-    endDate: "2025.12.07",
-    title: lang === 'en' ? "Asahikawa Handmade Artists Exhibition vol.29" : "あさひかわ手づくり作家展 vol.29",
-    url: "https://asahikawa-tezukurisakkaten.com/gallery/",
-    description: lang === 'en' 
-      ? ["Asahikawa Local Industry Promotion Center"] 
-      : ["旭川地場産業振興センター"],
-  },
-  {
-    startDate: "2025.11.08",
-    endDate: "2025.11.09",
-    title: lang === 'en' ? "Traveling Merchant and Magic Warehouse" : "旅商人と魔法の倉庫",
-    url: "https://green108945.studio.site/",
-    description: lang === 'en' 
-      ? ["Sapporo Cultural Arts Community Center SCARTS Mall C", "Consignment Exhibition"] 
-      : ["札幌市文化芸術交流センター SCARTSモールC", "委託出展"],
-  },
-  {
-    startDate: "2025.05.24",
-    endDate: "2025.05.25",
-    title: lang === 'en' ? "Sapporo Handmade Marché 2025" : "札幌ハンドメイドマルシェ2025",
-    url: "https://spr.handmade-marche.jp/history",
-    description: lang === 'en' 
-      ? ["Tsudome"] 
-      : ["つどーむ"],
-  },
-];
+// 作品データを現在の言語に変換
+const events = eventsRaw.map(item => ({
+  ...item,
+  title: item.title[lang],
+  description: item.description[lang],
+}));
 
-function formatDateRange(start: string, end: string): string {
-  const startParts = start.split('.');
-  const endParts = end.split('.');
-  return `${start} - ${endParts[1]}.${endParts[2]}`;
+// ====================== イベント用ヘルパー関数 ======================
+function getEventStatus(startDate: string, endDate: string): string {
+  const today = new Date();
+  const start = new Date(startDate.replace(/\./g, '-'));
+  const end = new Date(endDate.replace(/\./g, '-'));
+
+  if (today > end) return t('eventStatus.ended');
+  if (today < start) return t('eventStatus.upcoming');
+  return t('eventStatus.ongoing');
 }
 
-function getEventStatus(start: string, end: string): string {
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
-
-  const startDate = new Date(start);
-  const endDate = new Date(end);
-
-  if (isNaN(startDate.getTime()) || isNaN(endDate.getTime())) return t('status.ended');
-
-  if (today > endDate) return t('status.ended');
-  if (today < startDate) return t('status.upcoming');
-  return t('status.ongoing');
+function formatDateRange(startDate: string, endDate: string): string {
+  // 同じ月の場合は「2025.05.24-25」のように短縮表示
+  const [y1, m1] = startDate.split('.');
+  const [y2, m2] = endDate.split('.');
+  
+  if (y1 === y2 && m1 === m2) {
+    const d1 = startDate.split('.')[2];
+    const d2 = endDate.split('.')[2];
+    return `${y1}.${m1}.${d1}-${d2}`;
+  }
+  return `${startDate} - ${endDate}`;
 }
 
 function getStatusClass(status: string): string {
-  if (status === t('status.upcoming')) return 'bg-[#4f6a5e] text-white';
-  if (status === t('status.ongoing')) return 'bg-amber-500 text-white';
-  return 'bg-stone-100 text-stone-500';
+  if (status === t('eventStatus.ended'))    return "bg-stone-500 text-white";
+  if (status === t('eventStatus.upcoming')) return "bg-amber-500 text-white";
+  if (status === t('eventStatus.ongoing'))  return "bg-emerald-600 text-white";
+  return "bg-stone-500 text-white";
 }
+
+// 日付で新しい順（降順）に自動ソート
+const sortedEvents = [...events].sort((a, b) => {
+  const dateToNum = (dateStr: string) => {
+    const [y, m, d] = dateStr.split('.').map(Number);
+    return y * 10000 + m * 100 + d;
+  };
+  return dateToNum(b.startDate) - dateToNum(a.startDate);
+});
 ---
 
 <div id="events" class="section py-20 bg-[#f8f5f0]" data-island>
@@ -68,20 +62,18 @@ function getStatusClass(status: string): string {
     </h2>
 
     <div class="grid md:grid-cols-3 gap-8">
-      {events.map((event) => {
+      {sortedEvents.map((event) => {
         const status = getEventStatus(event.startDate, event.endDate);
         const displayDate = formatDateRange(event.startDate, event.endDate);
 
         return (
-          <a
+          <CardHover 
             href={event.url}
-            class="event-card block group"
             target={event.url.startsWith('http') ? '_blank' : '_self'}
             rel={event.url.startsWith('http') ? 'noopener noreferrer' : ''}
           >
             <div class="p-8 bg-white border border-stone-200 rounded-3xl 
-                        hover:border-[#4f6a5e] hover:shadow-2xl hover:-translate-y-2 
-                        transition-all duration-300 h-full flex flex-col">
+                        hover:border-[#4f6a5e] hover:shadow-2xl h-full flex flex-col">
               
               <div class="flex items-center justify-between mb-6">
                 <div class={`text-xs px-4 py-1.5 rounded-full font-medium ${getStatusClass(status)}`}>
@@ -102,18 +94,9 @@ function getStatusClass(status: string): string {
                 ))}
               </div>
             </div>
-          </a>
+          </CardHover>
         );
       })}
     </div>
   </div>
 </div>
-
-<script>
-  document.querySelectorAll('.event-card').forEach((card) => {
-    card.addEventListener('click', () => {
-      card.style.transform = 'scale(0.97)';
-      setTimeout(() => card.style.transform = 'scale(1)', 180);
-    });
-  });
-</script>

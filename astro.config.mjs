@@ -4,7 +4,7 @@ import tailwindcss from '@tailwindcss/vite';
 
 export default defineConfig({
   site: 'https://taisetsuasahikawa-svg.github.io',
-  base: '/portfolio', 
+  base: '/portfolio',   
   output: 'static',
 
   i18n: {

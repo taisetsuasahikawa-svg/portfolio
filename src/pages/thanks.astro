@@ -1,0 +1,128 @@
+---
+import Layout from '../layouts/Layout.astro';
+import { getLangFromUrl, useTranslations } from '../i18n/utils';
+
+const lang = getLangFromUrl(Astro.url);
+const t = useTranslations(lang);
+
+const title = lang === 'en' 
+  ? "For Our Candle Customers – Care & Safety Instructions" 
+  : "キャンドルをご購入いただいた皆様へ – お取り扱い説明書";
+---
+
+<Layout title={title}>
+  <div class="max-w-3xl mx-auto px-6 md:px-10 py-16 md:py-24 bg-white">
+    
+    <!-- 言語切替ボタン -->
+    <div class="flex justify-end mb-10">
+      <a
+        class="px-6 py-3 text-sm font-medium border-2 border-stone-300 hover:border-[#4f6a5e] 
+               hover:bg-[#4f6a5e] hover:text-white rounded-3xl transition-all flex items-center gap-2">
+        {lang === 'en' ? '日本語で読む 🌐' : 'Read in English 🌐'}
+      </a>
+    </div>
+
+    <div class="prose prose-stone max-w-none">
+      
+      <h1 class="text-4xl md:text-5xl font-medium tracking-tight text-stone-800 mb-8 leading-tight whitespace-pre-line">
+        {lang === 'en' 
+          ? "Thank you for purchasing\nour candles" 
+          : "キャンドルをご購入いただいた\n皆様へ"}
+      </h1>
+
+      <p class="text-lg text-stone-600 mb-12">
+        {lang === 'en' 
+          ? "We hope you enjoy the natural beauty of our mineral-inspired candles. Please read the following care and safety instructions carefully before use."
+          : "自然の鉱物をイメージしたオリジナルキャンドルをお選びいただき、誠にありがとうございます。安全にお使いいただくため、以下の取扱説明書を必ずお読みください。"}
+      </p>
+
+      <!-- 安全注意（最重要） -->
+      <div class="bg-amber-50 border border-amber-200 rounded-3xl p-8 md:p-10 mb-14">
+        <h2 class="text-2xl font-medium text-amber-800 mb-6 flex items-center gap-3">
+          <span class="text-3xl">⚠️</span>
+          {lang === 'en' ? "Important Safety Instructions" : "安全にお使いいただくための注意事項"}
+        </h2>
+        <ul class="space-y-4 text-stone-700 list-disc pl-6 text-[15.5px] leading-relaxed">
+          <li>{lang === 'en' ? "Never leave a burning candle unattended." : "火を灯したままその場を離れないでください。"}</li>
+          <li>{lang === 'en' ? "Keep out of reach of children and pets." : "お子様やペットの手の届かない場所でご使用ください。"}</li>
+          <li>{lang === 'en' ? "Place on a stable, heat-resistant surface away from flammable materials." : "平らで耐熱性のある場所に置き、周囲に燃えやすい物を置かないでください。"}</li>
+          <li>{lang === 'en' ? "Do not burn for more than 3–4 hours at a time." : "1回の燃焼時間は3〜4時間を目安にしてください。"}</li>
+          <li>{lang === 'en' ? "Trim the wick to 5mm before each use." : "毎回使用前に芯を5mm程度に切りそろえてください。"}</li>
+          <li>{lang === 'en' ? "Avoid drafts (fans, air conditioners, windows)." : "風の強い場所（エアコン・扇風機・窓際）での使用は避けてください。"}</li>
+          <li>{lang === 'en' ? "Keep candles away from curtains, books, and other flammable objects." : "カーテン・本・燃えやすい物から十分離して使用してください。"}</li>
+        </ul>
+      </div>
+
+      <!-- 正しい使い方 -->
+      <h2 class="text-3xl font-medium mb-8">
+        {lang === 'en' ? "How to Use" : "正しい使い方"}
+      </h2>
+      
+      <div class="grid md:grid-cols-2 gap-10 mb-14">
+        <div class="space-y-10">
+          <div>
+            <h3 class="font-medium text-xl mb-3">1. {lang === 'en' ? "First Burn" : "初回燃焼"}</h3>
+            <p class="text-stone-600">
+              {lang === 'en' 
+                ? "Burn the candle until the entire surface melts evenly (about 2–3 hours). This prevents tunneling and ensures even burning afterwards."
+                : "初回は表面全体が均一に溶けるまで（約2〜3時間）燃やしてください。これによりトンネリングを防ぎ、以後の燃焼が均等になります。"}
+            </p>
+          </div>
+          <div>
+            <h3 class="font-medium text-xl mb-3">2. {lang === 'en' ? "Wick Maintenance" : "芯のメンテナンス"}</h3>
+            <p class="text-stone-600">
+              {lang === 'en' 
+                ? "Before each use, trim the wick to approximately 5mm. Remove any carbon mushrooming with scissors or fingers."
+                : "毎回点火前に芯を約5mmにカットしてください。キノコ状に炭化した部分はハサミや指で取り除きましょう。"}
+            </p>
+          </div>
+        </div>
+
+        <div class="space-y-10">
+          <div>
+            <h3 class="font-medium text-xl mb-3">3. {lang === 'en' ? "Extinguishing" : "消火方法"}</h3>
+            <p class="text-stone-600">
+              {lang === 'en' 
+                ? "Use a candle snuffer or gently blow it out. Never use water or blow strongly."
+                : "キャンドルスナッファーを使うか、そっと息を吹きかけて消してください。水をかけたり強く吹いたりしないでください。"}
+            </p>
+          </div>
+          <div>
+            <h3 class="font-medium text-xl mb-3">4. {lang === 'en' ? "Storage" : "保管方法"}</h3>
+            <p class="text-stone-600">
+              {lang === 'en' 
+                ? "Store in a cool, dry place away from direct sunlight and extreme temperatures. Keep the lid on if possible."
+                : "直射日光や高温多湿を避け、涼しく乾燥した場所で保管してください。可能であれば蓋を閉めておくと良いです。"}
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <!-- ジオード・鉱物キャンドル特有のポイント -->
+      <h2 class="text-3xl font-medium mb-6">
+        {lang === 'en' ? "Special Notes for Geode & Mineral Candles" : "ジオード・鉱物キャンドル特有のポイント"}
+      </h2>
+      <ul class="space-y-4 text-stone-700 list-disc pl-6 mb-12 text-[15.5px] leading-relaxed">
+        <li>{lang === 'en' ? "The textured surface may cause slight uneven melting at first. This is normal and will improve after the first few burns." : "表面のテクスチャーにより初回は溶け方が少し不均一になることがありますが、問題ありません。数回使用すると改善します。"}</li>
+        <li>{lang === 'en' ? "Gel wax or clear parts may appear cloudy when cold, but become beautifully transparent when burning." : "ジェルワックス部分は冷えていると白っぽく見えますが、火を灯すと透明感が増します。"}</li>
+        <li>{lang === 'en' ? "Do not move the candle while the wax is liquid." : "ロウが溶けている間はキャンドルを移動させないでください。"}</li>
+        <li>{lang === 'en' ? "The embedded mineral-like decoration is made of safe materials, but please do not eat or ingest." : "埋め込まれた鉱物風の装飾は安全な素材を使用していますが、食べたり口に入れたりしないでください。"}</li>
+      </ul>
+
+      <!-- お問い合わせ -->
+      <div class="bg-[#f8f5f0] border border-[#4f6a5e]/20 rounded-3xl p-10 text-center">
+        <p class="text-stone-600 text-lg leading-relaxed">
+          {lang === 'en' 
+            ? "If you have any questions, concerns, or feedback about our candles, please feel free to contact us."
+            : "ご不明な点、ご質問、またはキャンドルに関するご意見・ご感想がございましたら、お気軽にお問い合わせください。"}
+        </p>
+        <a 
+          href="mailto:taisetsu.asahikawa@gmail.com" 
+          class="mt-8 inline-block px-10 py-4 bg-[#4f6a5e] hover:bg-[#3f554a] text-white rounded-3xl text-lg font-medium transition-all active:scale-[0.97]">
+          {lang === 'en' ? "Contact Us" : "お問い合わせする"}
+        </a>
+      </div>
+
+    </div>
+  </div>
+</Layout>

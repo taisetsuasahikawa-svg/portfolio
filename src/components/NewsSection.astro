@@ -1,49 +1,44 @@
 ---
+// src/components/NewsSection.astro
 import { getLangFromUrl, useTranslations } from '../i18n/utils';
+import { newsRaw } from '../data/news';
+import CardHover from '../ui/CardHover.astro';
 
 const lang = getLangFromUrl(Astro.url);
 const t = useTranslations(lang);
 
-const newsItems = [
-  {
-    date: "2026.04.05",
-    title: lang === 'en' 
-      ? "New Geode Candle 'Amethyst Drop' Now Available" 
-      : "新作ジオードキャンドル「アメジストの雫」発売開始",
-    description: lang === 'en'
-      ? "Limited candle with deep purple gradient and real amethyst powder. Available on minne and Etsy."
-      : "深い紫色のグラデーションと本物のアメジストパウダーを使用した限定キャンドル。minneとEtsyにて販売中。",
-    link: "https://minne.com/@tcc2024",
-    tag: lang === 'en' ? "New" : "新作"
-  },
-  {
-    date: "2026.03.15",
-    title: lang === 'en' 
-      ? "Stockly Inventory App β Released on GitHub" 
-      : "Stockly 在庫管理アプリ β版をGitHubで公開",
-    description: lang === 'en'
-      ? "Simple inventory tool linked with candle stock. Supports offline mode and barcode scanning."
-      : "キャンドル在庫と連動したシンプルな在庫管理ツール。オフライン対応とバーコードスキャン機能を搭載。",
-    link: "#",
-    tag: lang === 'en' ? "App" : "アプリ"
-  },
-  {
-    date: "2026.02.28",
-    title: lang === 'en' 
-      ? "Exhibiting at Sapporo Handmade Marché" 
-      : "ハンドメイドマルシェ出展のお知らせ",
-    description: lang === 'en'
-      ? "We will exhibit at the Sapporo Handmade Marché in May 2026. See event page for details."
-      : "2026年5月開催の札幌ハンドメイドマルシェへの出展が決定しました。詳細はイベントページをご覧ください。",
-    link: "#events",
-    tag: lang === 'en' ? "Event" : "イベント"
-  },
-];
+// ニュースデータを現在の言語に変換
+const newsItems = newsRaw.map(item => ({
+  ...item,
+  title: item.title[lang],
+  description: item.description[lang],
+}));
+
+// 日付で新しい順（降順）に自動ソート
+const sortedNewsItems = [...newsItems].sort((a, b) => {
+  const dateToNum = (dateStr: string) => {
+    const [y, m, d] = dateStr.split('.').map(Number);
+    return y * 10000 + m * 100 + d;
+  };
+  return dateToNum(b.date) - dateToNum(a.date);
+});
+
+function getTagLabel(tag: string): string {
+  const tagMap: Record<string, string> = {
+    new:   t('newsTag.new'),
+    app:   t('newsTag.app'),
+    event: t('newsTag.event'),
+    candle: t('newsTag.candle'),
+    else:  t('newsTag.else'),
+  };
+  return tagMap[tag] || tag;
+}
 
 function getTagClass(tag: string): string {
-  if (tag === "新作" || tag === "New") return "bg-[#4f6a5e] text-white";
-  if (tag === "アプリ" || tag === "App") return "bg-blue-600 text-white";
-  if (tag === "イベント" || tag === "Event") return "bg-amber-500 text-white";
+  if (tag === 'new' || tag === 'candle') return "bg-[#4f6a5e] text-white";
+  if (tag === 'app')                     return "bg-blue-600 text-white";
+  if (tag === 'event')                   return "bg-amber-500 text-white";
+  if (tag === 'else')                    return "bg-gray-500 text-white";
   return "bg-stone-100 text-stone-500";
 }
 ---
@@ -55,23 +50,22 @@ function getTagClass(tag: string): string {
     </h2>
 
     <div class="grid md:grid-cols-3 gap-8">
-      {newsItems.map((item) => (
-        <a
+      {sortedNewsItems.map((item) => (
+        <CardHover 
           href={item.link}
-          class="news-card block group"
           target={item.link.startsWith('http') ? '_blank' : '_self'}
           rel={item.link.startsWith('http') ? 'noopener noreferrer' : ''}
         >
           <div class="p-8 bg-white border border-stone-200 rounded-3xl 
-                      hover:border-[#4f6a5e] hover:shadow-2xl hover:-translate-y-2 
-                      transition-all duration-300 h-full flex flex-col">
+                      hover:border-[#4f6a5e] hover:shadow-2xl h-full flex flex-col">
             
             <div class="flex items-center justify-between mb-6">
               <div class="text-xs text-stone-500 font-mono tracking-wider">
                 {item.date}
               </div>
+              
               <div class={`text-xs px-4 py-1.5 rounded-full font-medium ${getTagClass(item.tag)}`}>
-                {item.tag}
+                {getTagLabel(item.tag)}
               </div>
             </div>
 
@@ -83,17 +77,8 @@ function getTagClass(tag: string): string {
               {item.description}
             </div>
           </div>
-        </a>
+        </CardHover>
       ))}
     </div>
   </div>
 </div>
-
-<script>
-  document.querySelectorAll('.news-card').forEach((card) => {
-    card.addEventListener('click', () => {
-      card.style.transform = 'scale(0.97)';
-      setTimeout(() => card.style.transform = 'scale(1)', 180);
-    });
-  });
-</script>

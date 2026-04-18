@@ -1,5 +1,7 @@
 ---
+// src/components/HeroSection.astro
 import { getLangFromUrl, useTranslations } from '../i18n/utils';
+import { IMAGE_PATHS } from '../constants/paths.ts';
 
 const lang = getLangFromUrl(Astro.url);
 const t = useTranslations(lang);
@@ -9,7 +11,7 @@ const t = useTranslations(lang);
   <!-- 最背面のヒーロー画像 -->
   <div class="absolute inset-0 z-0">
     <img 
-      src="https://picsum.photos/id/1015/2000/1200" 
+      src={IMAGE_PATHS.hero}
       alt={lang === 'en' ? "Geode Candle" : "ジオードキャンドル"}
       class="w-full h-full object-cover brightness-[0.65] scale-105"
     >
