@@ -1,5 +1,6 @@
 // astro.config.mjs
 import { defineConfig } from 'astro/config';
+import mdx from '@astrojs/mdx';
 import tailwindcss from '@tailwindcss/vite';
 
 export default defineConfig({
@@ -7,6 +8,7 @@ export default defineConfig({
   base: '/portfolio/',
   trailingSlash: 'always',
   output: 'static',
+  integrations: [mdx()],
 
   i18n: {
     defaultLocale: 'ja',

@@ -1,0 +1,145 @@
+---
+ // src/ui/ImageSlider.astro - 言語切り替え + タブ切り替え対応 最終強化版（タブ内 hidden 問題完全修正）
+import { Image } from 'astro:assets';
+
+const { 
+  images = [], 
+  title = {}, 
+  lang 
+} = Astro.props;
+
+const BASE = import.meta.env.BASE_URL.replace(/\/+$/, '') + '/';
+const sliderId = `splide-${Math.random().toString(36).slice(2, 11)}`;
+
+const currentLang = lang || 'ja';
+---
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@splidejs/splide@4.1.4/dist/css/splide.min.css" />
+
+<section class="splide max-w-4xl mx-auto" id={sliderId}>
+  <div class="splide__track">
+    <ul class="splide__list">
+      {images.map((item, index) => {
+        let path = item?.path || (typeof item === 'string' ? item : '');
+        if (!path) return null;
+
+        const cleanPath = path.replace(/^\/+/, '');
+        const fullSrc = `${BASE}${cleanPath}`;
+
+        let altText = '';
+        if (item?.alt) {
+          altText = item.alt[currentLang] || item.alt.ja || item.alt.en || '';
+        }
+        if (!altText) {
+          altText = title?.[currentLang] || title?.ja || `キャンドル作品 ${index + 1}`;
+        }
+
+        return (
+          <li class="splide__slide">
+            <Image
+              src={fullSrc}
+              alt={altText}
+              width={1200}
+              height={800}
+              class="w-full aspect-[4/3] md:aspect-[16/9] object-cover rounded-3xl"
+              loading={index === 0 ? 'eager' : 'lazy'}
+            />
+          </li>
+        );
+      })}
+    </ul>
+  </div>
+</section>
+
+<script type="module" define:vars={{ sliderId }}>
+  import Splide from 'https://cdn.jsdelivr.net/npm/@splidejs/splide@4.1.4/dist/js/splide.esm.js';
+
+  let splideInstance = null;
+
+  // 可視性チェック（tab-panel の hidden クラスを監視）
+  function isVisible() {
+    const el = document.getElementById(sliderId);
+    if (!el) return false;
+    const panel = el.closest('.tab-panel');
+    return !panel || !panel.classList.contains('hidden');
+  }
+
+  function initSplide(force = false) {
+    const el = document.getElementById(sliderId);
+    if (!el) return;
+
+    // hidden 状態なら初期化をスキップ（force=true の場合は強制）
+    if (!force && !isVisible()) return;
+
+    // 既存インスタンスを確実に破棄
+    if (splideInstance) {
+      splideInstance.destroy(true);
+      splideInstance = null;
+    }
+
+    splideInstance = new Splide(`#${sliderId}`, {
+      type: 'loop',
+      autoplay: true,
+      pauseOnHover: true,
+      interval: 8000,
+      speed: 900,
+      arrows: true,
+      pagination: true,
+      heightRatio: 0.68,
+      cover: true,
+      breakpoints: {
+        768: { heightRatio: 0.78 }
+      }
+    });
+
+    splideInstance.mount();
+  }
+
+  // 初回ロードは「可視状態のものだけ」初期化
+  function tryInitialInit() {
+    if (isVisible()) {
+      initSplide();
+    }
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', tryInitialInit);
+  } else {
+    tryInitialInit();
+  }
+
+  // Astroページロード（言語切り替え含む）
+  document.addEventListener('astro:page-load', () => {
+    setTimeout(tryInitialInit, 50);
+  });
+
+  // タブ切り替え監視（強化版）
+  const observer = new MutationObserver(() => {
+    if (isVisible()) {
+      // レイアウトが確定してから再初期化
+      requestAnimationFrame(() => {
+        setTimeout(() => initSplide(true), 80);
+      });
+    }
+  });
+
+  const tabPanel = document.getElementById(sliderId)?.closest('.tab-panel');
+  if (tabPanel) {
+    observer.observe(tabPanel, { attributes: true, attributeFilter: ['class'] });
+  }
+
+  // 保険：ウィンドウリサイズ時にも更新
+  window.addEventListener('resize', () => {
+    if (splideInstance && isVisible()) {
+      splideInstance.refresh();
+    }
+  });
+</script>
+
+<style>
+  .splide__track { border-radius: 1.5rem; overflow: hidden; box-shadow: 0 25px 50px -12px rgb(0 0 0 / 0.25); }
+  .splide__arrow { background: rgba(255,255,255,0.95) !important; color: #4f6a5e !important; width: 52px; height: 52px; }
+  .splide__arrow:hover { background: white !important; }
+  .splide__pagination__page { background: #d1d5db; }
+  .splide__pagination__page.is-active { background: #4f6a5e; transform: scale(1.25); }
+</style>

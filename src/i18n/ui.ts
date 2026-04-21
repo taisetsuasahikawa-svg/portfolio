@@ -1,6 +1,10 @@
 // src/i18n/ui.ts
-export const supportedLangs = ['ja', 'en'] as const;   // ← ここに 'zh', 'fr' などを追加
+export const supportedLangs = ['ja', 'en'] as const;   // ← ここに 'zh', 'fr' などを追加。astro.config.mjsのi18nにも追加するのを忘れずに
 export type Lang = typeof supportedLangs[number];
+export const langDisplayNames: Record<Lang, { ja: string; native: string }> = {
+  ja: { ja: '日本語', native: '日本語' },
+  en: { ja: '英語', native: 'English' },
+} as const;
 export const ui = {
   // ==================== ページ全体共通 ====================
   site: {
@@ -40,8 +44,8 @@ export const ui = {
 
   // ==================== 言語切り替え ====================
   langSwitch: {
-    ja: 'English',
-    en: '日本語',
+    ja: '言語を選択',
+    en: 'Select Language',
   },
 
   // ==================== ヒーローセクション ====================
@@ -51,8 +55,8 @@ export const ui = {
       en: "Nature's Beauty\nin Candles",
     },
     subtitle: {
-      ja: 'NATURE × TECHNOLOGY × CANDLE',
-      en: 'NATURE × TECHNOLOGY × CANDLE',
+      ja: 'Illuminating Earth\'s Ancient Memory',
+      en: 'Illuminating Earth\'s Ancient Memory',
     },
   },
 
@@ -60,13 +64,27 @@ export const ui = {
   candle: {
     section: {
       title: {
+        ja: '主なキャンドル作品',
+        en: 'Featured Candles',
+      },
+      desc: {
+        ja: '',
+        en: '',
+      },
+    },
+    list: {
+      title: {
         ja: 'キャンドル作品一覧',
         en: 'Candle Collection',
       },
       desc: {
-        ja: '自然の鉱物をイメージしたオリジナルキャンドル',
-        en: 'Original candles inspired by natural minerals and crystals',
+        ja: '',
+        en: '',
       },
+    },
+    goToCollection: {
+        ja: 'キャンドル一覧を見る',
+        en: 'View All Candles',
     },
     careTitle: {
       ja: 'キャンドルをご購入いただいた皆様へ',
@@ -76,6 +94,10 @@ export const ui = {
       ja: '作品名や説明で検索...',
       en: 'Search by name or description...',
     },
+    detail: {
+    burnTime: { ja: '燃焼時間', en: 'Burn Time' },
+    size:     { ja: 'サイズ',     en: 'Size' },
+  },
   },
 
   // ==================== アプリセクション ====================
@@ -150,6 +172,10 @@ export const ui = {
       ja: 'フィルターをクリア',
       en: 'Clear Filters',
     },
+    emptyMessage: {
+      ja: 'ただいま調整中です...',
+      en: 'Currently under preparation...',
+    },
   },
 
   // ==================== フッター ====================
@@ -173,6 +199,22 @@ export const ui = {
     contact: {
       ja: 'CONTACT',
       en: 'CONTACT',
+    },
+    minneName: {
+      ja: 'minne',
+      en: 'minne',
+    },
+    minneDesc: {
+      ja: '国内最大級のハンドメイドマーケット',
+      en: 'One of Japan\'s largest handmade markets',
+    },
+    etsyName: {
+      ja: 'Etsy',
+      en: 'Etsy',
+    },
+    etsyDesc: {
+      ja: 'Global Online Marketplace',
+      en: 'Global Online Marketplace',
     },
   },
 
@@ -210,7 +252,62 @@ export const ui = {
     geode:   { ja: 'ジオード系',     en: 'Geode Series' },
     mineral: { ja: '鉱物系',         en: 'Mineral Series' },
     crystal: { ja: 'クリスタル',     en: 'Crystal Series' },
+    large:   { ja: '大きなサイズ',   en: 'Large Size' },
   },
 
+
+// ==================== 取扱説明書（thanksページ） ====================
+  care: {
+    title: {
+      ja: 'キャンドルをお買い上げいただいた皆様へ',
+      en: 'To all who purchased our candles'
+    },
+    safetyTitle: {
+      ja: '安全にお使いいただくために',
+      en: 'Safety Instructions'
+    },
+    safetyList: {
+      ja: [
+        '火の近くで使用する際は、必ず目を離さないでください。',
+        '燃えやすいものから十分離してご使用ください。',
+        'お子様やペットの手の届かない場所でご使用ください。',
+        '使用後は芯をしっかり消火し、完全に冷めてから保管してください。'
+      ],
+      en: [
+        'Never leave a burning candle unattended.',
+        'Keep away from flammable materials.',
+        'Keep out of reach of children and pets.',
+        'After use, extinguish the wick completely and let it cool before storing.'
+      ]
+    },
+    careTitle: {
+      ja: 'キャンドルの長持ちのコツ',
+      en: 'Tips to make your candle last longer'
+    },
+    careList: {
+      ja: [
+        '初回使用時は、表面全体が溶けるまで2〜3時間燃やしてください（メモリーバーン）。',
+        '芯は常に5〜7mm程度にトリミングしてください。',
+        '直射日光や高温多湿を避けて保管してください。'
+      ],
+      en: [
+        'On first burn, let the candle burn until the entire surface melts (2-3 hours).',
+        'Always trim the wick to 5-7mm before each use.',
+        'Store away from direct sunlight and high humidity.'
+      ]
+    },
+    contact: {
+      ja: 'ご質問・ご不明点がありましたら、お気軽にお問い合わせください。',
+      en: 'If you have any questions, please feel free to contact us.'
+    },
+    backToHome: {
+      ja: 'トップページに戻る',
+      en: 'Back to Home'
+    },
+    subtitle: {
+      ja: '大切に、長くお使いいただくためのガイドです',
+      en: 'Guide to enjoy our candles safely and longer'
+    }
+  },
 
 } as const;

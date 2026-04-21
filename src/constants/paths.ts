@@ -1,6 +1,6 @@
 // src/constants/paths.ts
 const BASE = import.meta.env.BASE_URL;
-
+// ==================== 画像パス ====================
 export const IMAGE_PATHS = {
   logo: `${BASE}/images/icons/logo_tcc.png`,
   logoMinne: `${BASE}/images/icons/logo_minne.png`,
@@ -27,6 +27,15 @@ export const IMAGE_PATHS = {
     "scentcraft": `${BASE}/images/apps/scentcraft.png`,
     "burn-simulator": `${BASE}/images/apps/burn-simulator.png`,
   } as const,
+} as const;
+
+// ==================== 連絡先情報 ====================
+export const CONTACT_INFO = {
+  email: 'taisetsu.asahikawa@gmail.com',
+  minne: 'https://minne.com/@tcc2024/',
+  etsy: 'https://www.etsy.com/shop/MineralArtCandlesJP/',
+  x: 'https://x.com/TaisetsuCC/',
+  instagram: 'https://www.instagram.com/taisetsucc/',
 } as const;
 
 export type CandleImageKey = keyof typeof IMAGE_PATHS.candles;

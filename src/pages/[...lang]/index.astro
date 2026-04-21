@@ -1,10 +1,11 @@
 ---
 // src/pages/[...lang]/index.astro
 // 多言語対応・GitHub Pages完全対応・言語追加が ui.ts 1箇所だけで済む最終版
-// ★ TypeScriptエラー完全解消版 ★
+// ヘッダー・フッターは Layout.astro に統合済み
 
 import { supportedLangs, type Lang } from '../../i18n/ui.ts';
 import Layout from '../../layouts/Layout.astro';
+
 import HeroSection from '../../components/HeroSection.astro';
 import NewsSection from '../../components/NewsSection.astro';
 import CandleSection from '../../components/CandleSection.astro';
@@ -12,8 +13,7 @@ import AppSection from '../../components/AppSection.astro';
 import MaterialsSection from '../../components/MaterialsSection.astro';
 import EventsSection from '../../components/EventsSection.astro';
 
-import { useTranslations, getSwitchLangUrl } from '../../i18n/utils';
-import { IMAGE_PATHS } from '../../constants/paths.ts';
+import { useTranslations } from '../../i18n/utils';
 
 export async function getStaticPaths() {
   return supportedLangs.map((lang: Lang) => ({
@@ -31,108 +31,36 @@ const t = useTranslations(currentLang);
 
 <Layout title={t('site.title')}>
 
-  <!-- ==================== NAVBAR ==================== -->
-  <nav id="navbar" class="sticky top-0 z-50 bg-[#f8f5f0]/80 backdrop-blur-lg border-b border-stone-200 transition-all duration-300">
-    <div class="max-w-screen-2xl mx-auto px-6 md:px-10 py-4 md:py-5 flex items-center justify-between">
-      
-      <!-- ロゴ部分 -->
-      <div class="flex items-center gap-3">
-        <a href={currentLang === 'ja' ? '/portfolio/' : `/portfolio/${currentLang}/`} class="flex items-center gap-3">
-          <img
-            src={IMAGE_PATHS.logo}
-            alt="Taisetsu Crafter's Caravan Logo"
-            class="w-9 h-9 md:w-11 md:h-11 object-contain drop-shadow-sm"
-          >
-          <div>
-            <span class="text-2xl md:text-3xl font-medium tracking-tighter text-stone-900">
-              {t('site.title')}
-            </span>
-            <p class="text-[9px] md:text-[10px] text-stone-500 -mt-1 tracking-[1px]">
-              {t('site.subtitle')}
-            </p>
-          </div>
-        </a>
-      </div>
-      
-      <!-- デスクトップ用タブメニュー -->
-      <div class="hidden md:flex items-center gap-1 bg-white rounded-3xl p-1 shadow-sm border border-stone-100" id="tab-buttons">
-        <button data-tab="0" class="tab-button px-7 py-3 text-base font-medium rounded-3xl transition-all active bg-[#4f6a5e] text-white">
-          {t('nav.home')}
-        </button>
-        <button data-tab="1" class="tab-button px-7 py-3 text-base font-medium rounded-3xl transition-all">
-          {t('nav.candles')}
-        </button>
-        <button data-tab="2" class="tab-button px-7 py-3 text-base font-medium rounded-3xl transition-all">
-          {t('nav.apps')}
-        </button>
-        <button data-tab="3" class="tab-button px-7 py-3 text-base font-medium rounded-3xl transition-all">
-          {t('nav.materials')}
-        </button>
-      </div>
-      
-      <!-- 右側（言語切り替え + お問い合わせ） -->
-      <div class="flex items-center gap-3 md:gap-4">
-        <a
-          href={getSwitchLangUrl(Astro.url, currentLang)}
-          id="lang-switch"
-          class="hidden sm:block px-5 py-2 text-sm font-medium border border-stone-300 hover:border-[#4f6a5e] hover:bg-[#4f6a5e] hover:text-white rounded-3xl transition-all">
-          {t('langSwitch')}
-        </a>
+  <!-- ==================== デスクトップ用タブメニュー (スロット) ==================== -->
+  <div slot="nav-tabs" class="hidden md:flex items-center gap-1 bg-white rounded-3xl p-1 shadow-sm border border-stone-100" id="tab-buttons">
+    <button data-tab="0" class="tab-button px-7 py-3 text-base font-medium rounded-3xl transition-all active bg-[#4f6a5e] text-white">
+      {t('nav.home')}
+    </button>
+    <button data-tab="1" class="tab-button px-7 py-3 text-base font-medium rounded-3xl transition-all">
+      {t('nav.candles')}
+    </button>
+    <button data-tab="2" class="tab-button px-7 py-3 text-base font-medium rounded-3xl transition-all">
+      {t('nav.apps')}
+    </button>
+    <button data-tab="3" class="tab-button px-7 py-3 text-base font-medium rounded-3xl transition-all">
+      {t('nav.materials')}
+    </button>
+  </div>
 
-        <a href="#contact" class="hidden sm:block px-6 py-2.5 text-sm font-medium border border-stone-300 hover:border-[#4f6a5e] hover:bg-[#4f6a5e] hover:text-white rounded-3xl transition-all">
-          {t('nav.contact')}
-        </a>
-        
-        <button id="mobile-menu-button"
-                class="md:hidden w-11 h-11 flex items-center justify-center text-3xl text-stone-700 hover:text-[#4f6a5e] transition-colors">
-          ☰
-        </button>
-      </div>
-    </div>
-  </nav>
-
-  <!-- ==================== モバイルメニュー ==================== -->
-  <div id="mobile-menu" class="hidden fixed inset-0 bg-black/0 backdrop-blur-2xl z-[9999] flex items-start justify-center pt-[env(safe-area-inset-top)] pb-12 overflow-y-auto">
-    <div class="bg-white w-[95%] max-w-[420px] mx-auto mt-4 rounded-3xl shadow-2xl overflow-hidden border border-stone-200">
-      <div class="flex justify-end px-6 py-4 border-b border-stone-100">
-        <button id="mobile-close-button" class="w-11 h-11 flex items-center justify-center text-3xl text-stone-400 hover:text-stone-700 transition-colors">
-          ✕
-        </button>
-      </div>
-
-      <div class="flex flex-col p-3">
-        <button data-tab="0" class="mobile-tab-button w-full text-left px-8 py-5 text-[21px] font-medium rounded-2xl hover:bg-stone-100 active:bg-stone-200 transition-all">
-          {t('nav.home')}
-        </button>
-        <button data-tab="1" class="mobile-tab-button w-full text-left px-8 py-5 text-[21px] font-medium rounded-2xl hover:bg-stone-100 active:bg-stone-200 transition-all">
-          {t('nav.candles')}
-        </button>
-        <button data-tab="2" class="mobile-tab-button w-full text-left px-8 py-5 text-[21px] font-medium rounded-2xl hover:bg-stone-100 active:bg-stone-200 transition-all">
-          {t('nav.apps')}
-        </button>
-        <button data-tab="3" class="mobile-tab-button w-full text-left px-8 py-5 text-[21px] font-medium rounded-2xl hover:bg-stone-100 active:bg-stone-200 transition-all">
-          {t('nav.materials')}
-        </button>
-
-        <div class="px-8 py-5 border-t border-stone-100 mt-4">
-          <div class="text-xs uppercase tracking-widest text-stone-400 mb-3">
-            {currentLang === 'ja' ? '言語' : 'LANGUAGE'}
-          </div>
-          <a
-            href={getSwitchLangUrl(Astro.url, currentLang)}
-            id="mobile-lang-switch"
-            class="block w-full py-4 text-center text-lg font-medium border border-stone-300 hover:border-[#4f6a5e] hover:bg-[#4f6a5e] hover:text-white rounded-3xl transition-all active:scale-[0.97]">
-            {t('langSwitch')}
-          </a>
-        </div>
-      </div>
-
-      <div class="p-6 border-t border-stone-100">
-        <a href="#contact" class="block w-full py-5 text-center text-lg font-medium bg-[#4f6a5e] hover:bg-[#3f554a] text-white rounded-3xl active:scale-[0.97] transition-all">
-          {t('nav.contact')}
-        </a>
-      </div>
-    </div>
+  <!-- ==================== モバイル用タブメニュー (スロット) ==================== -->
+  <div slot="mobile-tabs" class="flex flex-col p-3">
+    <button data-tab="0" class="mobile-tab-button w-full text-left px-8 py-5 text-[21px] font-medium rounded-2xl hover:bg-stone-100 active:bg-stone-200 transition-all">
+      {t('nav.home')}
+    </button>
+    <button data-tab="1" class="mobile-tab-button w-full text-left px-8 py-5 text-[21px] font-medium rounded-2xl hover:bg-stone-100 active:bg-stone-200 transition-all">
+      {t('nav.candles')}
+    </button>
+    <button data-tab="2" class="mobile-tab-button w-full text-left px-8 py-5 text-[21px] font-medium rounded-2xl hover:bg-stone-100 active:bg-stone-200 transition-all">
+      {t('nav.apps')}
+    </button>
+    <button data-tab="3" class="mobile-tab-button w-full text-left px-8 py-5 text-[21px] font-medium rounded-2xl hover:bg-stone-100 active:bg-stone-200 transition-all">
+      {t('nav.materials')}
+    </button>
   </div>
 
   <!-- ==================== メインコンテンツ ==================== -->
@@ -156,144 +84,116 @@ const t = useTranslations(currentLang);
     </div>
   </div>
 
-  <!-- ==================== FOOTER ==================== -->
-  <footer id="contact" class="bg-stone-900 text-white py-20">
-    <div class="max-w-screen-2xl mx-auto px-10">
-      <div class="grid md:grid-cols-12 gap-12">
-
-        <div class="md:col-span-5">
-          <div class="flex items-center gap-3">
-            <img src={IMAGE_PATHS.logo} alt="Logo" class="w-9 h-9 object-contain">
-            <span class="text-3xl font-medium tracking-tight text-white">
-              {t('site.title')}
-            </span>
-          </div>
-          <p class="mt-8 text-stone-400 max-w-sm leading-relaxed">
-            {t('footer.description')}
-          </p>
-          <p class="mt-12 text-xs text-stone-500">
-            {t('footer.copyright')}
-          </p>
-        </div>
-
-        <div class="md:col-span-4">
-          <div class="font-medium mb-6 text-[#d97706] tracking-widest text-sm">
-            {t('footer.shop')}
-          </div>
-          <div class="space-y-6">
-            <a href="https://minne.com/@tcc2024/" target="_blank" class="group flex items-center gap-4 hover:text-[#d97706] transition-colors">
-              <div class="w-12 h-12 bg-white rounded-2xl flex items-center justify-center flex-shrink-0 shadow-sm border border-stone-200 group-hover:scale-110 transition-transform">
-                <img src={IMAGE_PATHS.logoMinne} alt="minne" class="w-12 h-12 object-contain">
-              </div>
-              <div>
-                <div class="font-medium text-lg">minne</div>
-                <div class="text-xs text-stone-400">日本最大級ハンドメイドマーケット</div>
-              </div>
-            </a>
-
-            <a href="https://www.etsy.com/shop/MineralArtCandlesJP/" target="_blank" class="group flex items-center gap-4 hover:text-[#d97706] transition-colors">
-              <div class="w-12 h-12 bg-white/10 rounded-2xl flex items-center justify-center flex-shrink-0 overflow-hidden group-hover:scale-110 transition-transform">
-                <img src={IMAGE_PATHS.logoEtsy} alt="Etsy" class="w-12 h-12 object-contain">
-              </div>
-              <div>
-                <div class="font-medium text-lg">Etsy</div>
-                <div class="text-xs text-stone-400">Global Online Marketplace</div>
-              </div>
-            </a>
-          </div>
-        </div>
-
-        <div class="md:col-span-3 flex flex-col">
-          <div class="font-medium mb-6 text-[#d97706] tracking-widest text-sm">
-            {t('footer.follow')}
-          </div>
-          
-          <div class="flex gap-4 mb-12">
-            <a href="https://x.com/TaisetsuCC/" target="_blank" class="w-12 h-12 bg-white rounded-2xl flex items-center justify-center shadow-sm border border-stone-200 overflow-hidden transition-all hover:scale-110">
-              <img src={IMAGE_PATHS.logoX} alt="X" class="w-7 h-7 object-contain">
-            </a>
-            <a href="https://www.instagram.com/taisetsucc/" target="_blank" class="w-12 h-12 bg-white rounded-2xl flex items-center justify-center overflow-hidden transition-all hover:scale-110">
-              <img src={IMAGE_PATHS.logoInstagram} alt="Instagram" class="w-9 h-9 object-contain">
-            </a>
-          </div>
-
-          <div>
-            <div class="font-medium mb-6 text-[#d97706] tracking-widest text-sm">
-              {t('footer.contact')}
-            </div>
-            <a href="mailto:taisetsu.asahikawa@gmail.com" class="w-12 h-12 bg-white rounded-2xl flex items-center justify-center overflow-hidden transition-all hover:scale-110">
-              <img src={IMAGE_PATHS.mailIcon} alt="mail" class="w-12 h-12 object-contain scale-200">
-            </a>
-          </div>
-        </div>
-      </div>
-    </div>
-  </footer>
-
-  <!-- ==================== スクリプト（TypeScript型エラー完全解消） ==================== -->
+  <!-- タブ切り替え用スクリプト -->
   <script>
-    function switchTab(tabIndex: number) {
-      document.querySelectorAll('.tab-panel').forEach(panel => panel.classList.add('hidden'));
-      const activePanel = document.getElementById(`tab-panel-${tabIndex}`);
-      if (activePanel) activePanel.classList.remove('hidden');
+    // タブ定義
+    const tabConfig = {
+      0: { name: 'home', label: 'HOME' },
+      1: { name: 'candles', label: 'Candles' },
+      2: { name: 'apps', label: 'Apps' },
+      3: { name: 'materials', label: 'Materials' }
+    } as const;
 
-      document.querySelectorAll('.tab-button, .mobile-tab-button').forEach(btn => {
-        const button = btn as HTMLButtonElement;
-        button.classList.remove('active', 'bg-[#4f6a5e]', 'text-white');
-        if (parseInt(button.getAttribute('data-tab') || '0') === tabIndex) {
-          button.classList.add('active', 'bg-[#4f6a5e]', 'text-white');
-        }
+    function getTabIndexFromSlug(slug: string | null): number {
+      if (!slug) return 0;
+      const entry = Object.entries(tabConfig).find(([_, config]) => config.name === slug);
+      return entry ? parseInt(entry[0]) : 0;
+    }
+
+    function getSlugFromTabIndex(index: number): string {
+      return tabConfig[index as keyof typeof tabConfig]?.name || 'home';
+    }
+
+    function switchTab(tabIndex: number, pushState: boolean = true) {
+      const slug = getSlugFromTabIndex(tabIndex);
+
+      // パネル切り替え
+      document.querySelectorAll('.tab-panel').forEach((panel, i) => {
+        panel.classList.toggle('hidden', i !== tabIndex);
       });
 
-      const navbarHeight = 75;
+      // ボタンアクティブ状態
+      document.querySelectorAll('.tab-button, .mobile-tab-button').forEach(btn => {
+        const button = btn as HTMLButtonElement;
+        const btnIndex = parseInt(button.getAttribute('data-tab') || '0');
+        button.classList.toggle('active', btnIndex === tabIndex);
+        button.classList.toggle('bg-[#4f6a5e]', btnIndex === tabIndex);
+        button.classList.toggle('text-white', btnIndex === tabIndex);
+      });
+
+      // URLにタブ名を反映
+      if (pushState) {
+        const url = new URL(window.location.href);
+        if (slug === 'home') {
+          url.searchParams.delete('tab');
+        } else {
+          url.searchParams.set('tab', slug);
+        }
+        window.history.pushState({ tab: tabIndex, slug }, '', url.toString());
+      }
+
+      // スムーズスクロール
+      const navbarHeight = 80;
       setTimeout(() => {
         const target = document.getElementById(`tab-panel-${tabIndex}`);
         if (target) {
           const rect = target.getBoundingClientRect();
-          window.scrollTo({ 
-            top: window.pageYOffset + rect.top - navbarHeight, 
-            behavior: 'smooth' 
+          window.scrollTo({
+            top: window.pageYOffset + rect.top - navbarHeight,
+            behavior: 'smooth'
           });
         }
       }, 80);
     }
 
-    document.addEventListener('DOMContentLoaded', () => {
+    // ブラウザバック・フォワード対応
+    function handlePopState(e: PopStateEvent) {
+      let tabIndex = 0;
+      if (e.state && typeof e.state.tab === 'number') {
+        tabIndex = e.state.tab;
+      } else {
+        const urlParams = new URLSearchParams(window.location.search);
+        const slug = urlParams.get('tab');
+        tabIndex = getTabIndexFromSlug(slug);
+      }
+      switchTab(tabIndex, false);
+    }
+
+    // 初期化
+    function initTabs() {
+      // デスクトップタブ
       document.querySelectorAll('.tab-button').forEach(btn => {
         btn.addEventListener('click', () => {
-          const button = btn as HTMLButtonElement;
-          switchTab(parseInt(button.getAttribute('data-tab') || '0'));
+          const index = parseInt((btn as HTMLButtonElement).getAttribute('data-tab') || '0');
+          switchTab(index);
         });
       });
 
+      // モバイルタブ
       document.querySelectorAll('.mobile-tab-button').forEach(btn => {
         btn.addEventListener('click', () => {
-          const button = btn as HTMLButtonElement;
-          switchTab(parseInt(button.getAttribute('data-tab') || '0'));
+          const index = parseInt((btn as HTMLButtonElement).getAttribute('data-tab') || '0');
+          switchTab(index);
           document.getElementById('mobile-menu')?.classList.add('hidden');
         });
       });
 
-      const mobileBtn = document.getElementById('mobile-menu-button') as HTMLButtonElement | null;
-      const mobileMenu = document.getElementById('mobile-menu');
-      const closeBtn = document.getElementById('mobile-close-button') as HTMLButtonElement | null;
-
-      mobileBtn?.addEventListener('click', () => mobileMenu?.classList.toggle('hidden'));
-      closeBtn?.addEventListener('click', () => mobileMenu?.classList.add('hidden'));
-
+      // 初期タブ（言語切り替え後は常にHOMEに戻る）
       const urlParams = new URLSearchParams(window.location.search);
-      let initialTab = parseInt(urlParams.get('tab') || '0');
-      if (isNaN(initialTab) || initialTab < 0 || initialTab > 3) initialTab = 0;
-      switchTab(initialTab);
-    });
+      const initialSlug = urlParams.get('tab');
+      const initialTab = getTabIndexFromSlug(initialSlug);
 
-    window.addEventListener('scroll', () => {
-      const nav = document.getElementById('navbar');
-      if (window.scrollY > 30) {
-        nav?.classList.add('bg-[#f8f5f0]', 'shadow-sm');
-      } else {
-        nav?.classList.remove('bg-[#f8f5f0]', 'shadow-sm');
-      }
-    });
+      switchTab(initialTab, false);
+
+      // popstate登録
+      window.addEventListener('popstate', handlePopState);
+    }
+
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', initTabs);
+    } else {
+      initTabs();
+    }
   </script>
+
 </Layout>

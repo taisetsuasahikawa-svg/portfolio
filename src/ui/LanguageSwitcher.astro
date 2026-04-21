@@ -1,0 +1,75 @@
+---
+// src/ui/LanguageSwitcher.astro
+import { supportedLangs } from '../i18n/ui.ts';
+import { getSwitchLangUrl, getLangDisplayName } from '../i18n/utils';
+
+const { currentUrl } = Astro.props;
+const currentLang = Astro.props.currentLang || 'ja';
+---
+
+<div class="relative group" id="lang-switcher">
+  <button 
+    id="lang-trigger"
+    class="flex items-center gap-2 px-5 py-2.5 text-sm font-medium border border-stone-300 hover:border-[#4f6a5e] hover:bg-white rounded-3xl transition-all w-full md:w-auto">
+    <img 
+      src="/portfolio/images/icons/language_selection.png" 
+      alt="Language" 
+      class="w-5 h-5 object-contain"
+    >
+    <span class="min-w-[72px] text-left">
+      {getLangDisplayName(currentLang)}
+    </span>
+    <span class="text-xs opacity-70">▼</span>
+  </button>
+
+  <div id="lang-dropdown"
+       class="absolute right-0 mt-1 w-52 bg-white rounded-3xl shadow-2xl border border-stone-100 py-1 overflow-hidden z-[9999]
+              opacity-0 invisible transition-all duration-200
+              md:group-hover:opacity-100 md:group-hover:visible">
+    {supportedLangs.map((langCode) => (
+      <a 
+        href={getSwitchLangUrl(currentUrl, langCode)}
+        class={`block px-6 py-3.5 text-sm hover:bg-stone-100 transition-colors flex items-center justify-between mx-1 rounded-2xl
+                ${currentLang === langCode ? 'bg-stone-50 font-medium' : ''}`}>
+        <span>{getLangDisplayName(langCode)}</span>
+        {currentLang === langCode && <span class="text-[#4f6a5e] text-xs">✓</span>}
+      </a>
+    ))}
+  </div>
+</div>
+
+<script>
+  function initLanguageSwitcher() {
+    const trigger = document.getElementById('lang-trigger');
+    const dropdown = document.getElementById('lang-dropdown');
+    if (!trigger || !dropdown) return;
+
+    // デスクトップはホバー優先
+    if (window.innerWidth >= 768) return;
+
+    let isOpen = false;
+
+    trigger.addEventListener('click', (e) => {
+      e.stopImmediatePropagation();
+      isOpen = !isOpen;
+
+      if (isOpen) {
+        dropdown.classList.remove('invisible', 'opacity-0');
+        dropdown.classList.add('opacity-100', 'visible');
+      } else {
+        dropdown.classList.add('invisible', 'opacity-0');
+        dropdown.classList.remove('opacity-100', 'visible');
+      }
+    });
+
+    // 外側クリックで閉じる
+    document.addEventListener('click', () => {
+      dropdown.classList.add('invisible', 'opacity-0');
+      dropdown.classList.remove('opacity-100', 'visible');
+    });
+  }
+
+  // ページ読み込み時
+  document.addEventListener('DOMContentLoaded', initLanguageSwitcher);
+
+</script>

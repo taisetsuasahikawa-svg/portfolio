@@ -1,5 +1,5 @@
 // src/i18n/utils.ts
-import { ui, supportedLangs, type Lang } from './ui.ts';
+import { langDisplayNames, ui, supportedLangs, type Lang } from './ui.ts';
 
 export function useTranslations(lang: Lang) {
   return function t(key: string): string {
@@ -19,39 +19,50 @@ export function getLangFromUrl(url: URL): Lang {
   const segments = pathname.split('/');
   const langSegment = segments[0];
 
-  // supportedLangs に含まれる言語コードなら返す（jaは省略されるのでデフォルト）
   if (langSegment && supportedLangs.includes(langSegment as Lang)) {
     return langSegment as Lang;
   }
   return 'ja';
 }
 
-// ==================== 完全自動言語切り替え ====================
-export function getSwitchLangUrl(currentUrl: URL, currentLang: Lang): string {
-  const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+// ==================== 指定した言語に直接切り替えるURLを生成 ====================
+export function getSwitchLangUrl(currentUrl: URL, targetLang: Lang): string {
+  const base = import.meta.env.BASE_URL.replace(/\/$/, ''); // "/portfolio"
+
+  // Astro.url.pathname から base を除去して「純粋なパス」を取得
   let pathname = currentUrl.pathname;
 
-  // 現在の言語コードを除去
-  pathname = pathname
-    .replace(/^\/portfolio\/(en|ko|zh|fr|de)\//, '/portfolio/')
-    .replace(/\/$/, '');
-
-  if (pathname === '' || pathname === '/portfolio') pathname = '/portfolio';
-
-  // 次の言語を自動で決定（循環する）
-  const currentIndex = supportedLangs.indexOf(currentLang);
-  const nextIndex = (currentIndex + 1) % supportedLangs.length;
-  const nextLang = supportedLangs[nextIndex];
-
-  let newPath: string;
-  if (nextLang === 'ja') {
-    newPath = '/portfolio/';
-  } else {
-    newPath = `/portfolio/${nextLang}/`;
+  // base（例: /portfolio）を取り除く
+  if (base && base !== '/') {
+    pathname = pathname.replace(new RegExp(`^${base}`), '') || '/';
   }
 
-  let fullUrl = (base + newPath.replace(/^\/portfolio/, '')).replace(/\/+/g, '/');
-  if (!fullUrl.endsWith('/')) fullUrl += '/';
+  // 既存の言語プレフィックス（ja以外）をすべて除去
+  const nonDefaultLangs = supportedLangs.filter(l => l !== 'ja').join('|');
+  if (nonDefaultLangs) {
+    const langRegex = new RegExp(`^/(${nonDefaultLangs})/?`);
+    pathname = pathname.replace(langRegex, '/');
+  }
 
-  return fullUrl + currentUrl.search;
+  // パスを正規化（常に / で始まるように）
+  pathname = pathname.replace(/^\/+/, '/').replace(/\/$/, '') || '/';
+
+  // 新しい言語のプレフィックスを付与
+  let newPath: string;
+  if (targetLang === 'ja') {
+    newPath = pathname;                    // 日本語はプレフィックスなし
+  } else {
+    newPath = `/${targetLang}${pathname === '/' ? '' : pathname}`;
+  }
+
+  // base を再結合して返す
+  const finalUrl = `${base}${newPath}`.replace(/\/+/g, '/');
+
+  // trailingSlash: 'always' に合わせて末尾に / を付ける
+  return finalUrl.endsWith('/') ? finalUrl : finalUrl + '/';
+}
+
+// ==================== 現在の言語の表示名を取得するヘルパー ====================
+export function getLangDisplayName(lang: Lang, displayIn: 'ja' | 'native' = 'native'): string {
+  return langDisplayNames[lang]?.[displayIn] || lang;
 }
