@@ -1,0 +1,68 @@
+---
+import { useTranslations } from '../i18n/utils';
+import { candleTag, type Lang } from '../i18n/ui.ts';
+
+interface Props {
+  tag: string;
+  lang: Lang;
+  asButton?: boolean;
+  dataTag?: string;
+  class?: string;
+  id?: string;
+}
+
+const props = Astro.props as Props;
+const {
+  tag,
+  lang,
+  asButton = false,
+  dataTag,
+  class: extraClass = '',
+  id,
+} = props;
+
+const t = useTranslations(lang as Lang);
+const tagDef = candleTag[tag as keyof typeof candleTag];
+const tagColor = tagDef?.color ?? '#4f6a5e';
+const tagLabel = t(`candleTag.${tag}`) || tag;
+const baseClass = 'inline-flex items-center px-5 py-2 text-sm font-medium rounded-3xl border bg-white transition-all';
+const className = `${baseClass} ${extraClass}`.trim();
+const style = `--tag-color: ${tagColor}; border-color: ${tagColor}; color: ${tagColor};`;
+---
+
+{asButton ? (
+  <button
+    type="button"
+    id={id}
+    data-tag={dataTag ?? tag}
+    class={className}
+    style={style}
+  >
+    #{tagLabel}
+  </button>
+) : (
+  <span
+    id={id}
+    class={className}
+    style={style}
+  >
+    #{tagLabel}
+  </span>
+)}
+
+<style>
+  .tag-btn {
+    transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+  }
+
+  .tag-btn:not(.active):hover {
+    background-color: rgba(255, 255, 255, 0.9);
+  }
+
+  .tag-btn.active {
+    background-color: var(--tag-color);
+    color: white !important;
+    border-color: var(--tag-color);
+    box-shadow: 0 8px 16px -10px rgba(0, 0, 0, 0.25);
+  }
+</style>

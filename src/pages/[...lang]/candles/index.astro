@@ -1,51 +1,56 @@
 ---
 // src/pages/[...lang]/candles/index.astro
-// 多言語対応・言語フォルダ方式（ja/en）完全対応版
 
 import Layout from '../../../layouts/Layout.astro';
 import { getLangFromUrl, useTranslations } from '../../../i18n/utils';
-import { supportedLangs } from '../../../i18n/ui.ts';
+import { supportedLangs, candleTag } from '../../../i18n/ui.ts';
 
 import CandleCard from '../../../ui/CandleCard.astro';
+import TagPill from '../../../ui/TagPill.astro';
 import { getAllProcessedCandles } from '../../../lib/GetCandleContents.ts';
 
 export async function getStaticPaths() {
   return supportedLangs.map((lang) => ({
-    params: { 
-      lang: lang === 'ja' ? undefined : lang 
+    params: {
+      lang: lang === 'ja' ? undefined : lang,
     },
     props: { lang },
   }));
 }
 
-// 現在の言語を取得（全ページ共通: URLベース）
 const currentLang = getLangFromUrl(Astro.url);
 const t = useTranslations(currentLang);
 
-// 全キャンドルデータを現在の言語で取得（言語フォルダ方式対応済み）
-const allCandles = await getAllProcessedCandles(currentLang);
+const candles = await getAllProcessedCandles(currentLang);
 
-// タグフィルター用（重複除去）
-const allTagObjects = [...new Set(
-  allCandles.flatMap(candle => candle.tags || [])
-)].map(tagKey => ({
-  key: tagKey,
-  label: t(`candleTag.${tagKey}`) || tagKey
-}));
+const availableTagKeys = new Set(candles.flatMap((candle) => candle.tags || []));
+const tagGroupOrder = ['series', 'size', 'color', 'wax', 'feature'];
+const filterTagGroups = tagGroupOrder
+  .map((groupKey) => ({
+    group: groupKey,
+    label: t(`tagGroup.${groupKey}`) || groupKey,
+    items: Object.entries(candleTag)
+      .filter(([tagKey, tagDef]) => availableTagKeys.has(tagKey))
+      .filter(([, tagDef]) => tagDef.group === groupKey)
+      .map(([tagKey]) => ({
+        key: tagKey,
+        label: t(`candleTag.${tagKey}`) || tagKey,
+        color: candleTag[tagKey as keyof typeof candleTag].color,
+      })),
+  }))
+  .filter((group) => group.items.length > 0);
+
 ---
 
 <Layout title={`${t('candle.list.title')} | ${t('site.title')}`}>
-
   <div class="max-w-screen-2xl mx-auto px-6 md:px-10 py-12 bg-[#f8f5f0]">
-
-    <!-- HOMEリンク -->
-    <a 
+    <a
       href={currentLang === 'ja' ? '/portfolio/' : `/portfolio/${currentLang}/`}
-      class="inline-flex items-center gap-2 text-[#4f6a5e] hover:text-stone-900 mb-8 font-medium transition-colors">
+      class="inline-flex items-center gap-2 text-[#4f6a5e] hover:text-stone-900 mb-8 font-medium transition-colors"
+    >
       ← {t('common.backToHome')}
     </a>
 
-    <!-- ページヘッダー -->
     <div class="flex flex-col md:flex-row justify-between items-start md:items-end gap-6 mb-12">
       <div>
         <h1 class="text-5xl md:text-6xl font-medium tracking-tight text-stone-900 mt-2">
@@ -56,119 +61,124 @@ const allTagObjects = [...new Set(
         </p>
       </div>
 
-      <!-- 取扱説明書リンク -->
       <div class="flex flex-col sm:flex-row gap-4">
-        <a 
+        <a
           href={currentLang === 'ja' ? '/portfolio/thanks/' : `/portfolio/${currentLang}/thanks/`}
           target="_blank"
           rel="noopener noreferrer"
-          class="group inline-flex items-center justify-center gap-3 w-full sm:w-auto 
-                px-8 py-4 bg-white border-2 border-[#0d2f68] rounded-3xl 
-                hover:bg-[#0d2f68] hover:text-white transition-all 
+          class="group inline-flex items-center justify-center gap-3 w-full sm:w-auto
+                px-8 py-4 bg-white border-2 border-[#0d2f68] rounded-3xl
+                hover:bg-[#0d2f68] hover:text-white transition-all
                 text-[#0d2f68] font-medium text-lg shadow-sm
-                whitespace-normal text-center min-h-[58px]">
+                whitespace-normal text-center min-h-[58px]"
+        >
           <span class="leading-tight">{t('candle.careTitle')}</span>
         </a>
       </div>
     </div>
 
-    <!-- 検索＆タグフィルター -->
-    <div class="mb-12 flex flex-col md:flex-row gap-4 items-center">
-      <div class="relative flex-1 max-w-md">
-        <form id="search-form" class="relative">
-          <input 
-            id="search-input"
-            type="text" 
-            placeholder={t('candle.searchPlaceholder')}
-            class="w-full px-6 py-4 bg-white border border-stone-200 rounded-3xl focus:outline-none focus:border-[#4f6a5e] text-base placeholder:text-stone-400 pr-14"
-          >
-          <button 
-            type="submit"
-            id="search-button"
-            class="absolute right-2 top-1/2 -translate-y-1/2 w-10 h-10 flex items-center justify-center text-stone-400 hover:text-[#4f6a5e] hover:bg-stone-100 active:bg-stone-200 rounded-2xl transition-all">
-            <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 01-14 0 7 7 0 0114 0z" />
-            </svg>
-          </button>
-        </form>
-      </div>
-
-      <div class="flex-1">
-        <div id="tag-filters" class="flex flex-wrap gap-2">
-          {allTagObjects.map(tag => (
-            <button 
-              data-tag={tag.key}
-              class="tag-btn px-5 py-2 text-sm font-medium rounded-3xl border border-stone-200 hover:border-[#4f6a5e] transition-all active:scale-95">
-              #{tag.label}
+    <div class="mb-12 space-y-4">
+      <div class="flex flex-col lg:flex-row gap-4 items-start">
+        <div class="relative flex-1 max-w-full lg:max-w-md">
+          <form id="search-form" class="relative">
+            <input
+              id="search-input"
+              type="text"
+              placeholder={t('candle.searchPlaceholder')}
+              class="w-full px-6 py-4 bg-white border border-stone-200 rounded-3xl focus:outline-none focus:border-[#4f6a5e] text-base placeholder:text-stone-400 pr-14"
+            />
+            <button
+              type="submit"
+              id="search-button"
+              class="absolute right-2 top-1/2 -translate-y-1/2 w-10 h-10 flex items-center justify-center text-stone-400 hover:text-[#4f6a5e] hover:bg-stone-100 active:bg-stone-200 rounded-2xl transition-all"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 01-14 0 7 7 0 0114 0z" />
+              </svg>
             </button>
-          ))}
+          </form>
         </div>
+
+        <button
+          id="clear-filters"
+          class="px-6 py-3 text-sm font-medium border border-stone-300 hover:border-[#4f6a5e] rounded-3xl transition-colors whitespace-nowrap"
+        >
+          {t('common.clearFilters')}
+        </button>
       </div>
 
-      <button id="clear-filters" 
-              class="px-6 py-3 text-sm font-medium border border-stone-300 hover:border-[#4f6a5e] rounded-3xl transition-colors whitespace-nowrap">
-        {t('common.clearFilters')}
-      </button>
+      <div id="tag-filters" class="flex flex-wrap gap-3 items-center overflow-x-auto pb-2">
+        {filterTagGroups.map((group) => (
+          <div class="flex flex-wrap items-center gap-2">
+            <span class="text-xs uppercase tracking-widest text-stone-400">{group.label}</span>
+            {group.items.map((tagOption) => (
+              <TagPill
+                tag={tagOption.key}
+                lang={currentLang}
+                asButton
+                dataTag={tagOption.key}
+                class="tag-btn px-5 py-2 text-sm font-medium rounded-3xl border bg-white transition-all active:scale-95"
+              />
+            ))}
+          </div>
+        ))}
+      </div>
     </div>
 
-    <!-- 作品グリッド -->
     <div id="candle-grid" class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-      {allCandles.map((candle) => (
-        <CandleCard 
+      {candles.map((candle) => (
+        <CandleCard
           candle={candle}
           lang={currentLang}
-          href={currentLang === 'ja' 
-            ? `/portfolio/candles/${candle.slug}/` 
+          href={currentLang === 'ja'
+            ? `/portfolio/candles/${candle.slug}/`
             : `/portfolio/${currentLang}/candles/${candle.slug}/`}
-          dataTitle={candle.title.toLowerCase()}
-          dataDescription={candle.description.toLowerCase()}
-          dataTags={candle.tags?.join(',')}
+          filterTitle={candle.title.toLowerCase()}
+          filterDescription={candle.description.toLowerCase()}
+          filterTags={candle.tags?.join(',')}
         />
       ))}
     </div>
 
-    {allCandles.length === 0 && (
+    {candles.length === 0 && (
       <div class="text-center py-20 text-stone-600">
         <p class="text-2xl font-medium">{t('common.emptyMessage')}</p>
       </div>
     )}
-
   </div>
 
-  <!-- 検索・フィルター機能（クライアントサイド） -->
   <script>
     const searchInput = document.getElementById('search-input') as HTMLInputElement;
     const searchForm = document.getElementById('search-form');
-    const tagFiltersContainer = document.getElementById('tag-filters');
+    const tagFilterContainer = document.getElementById('tag-filters');
     const clearButton = document.getElementById('clear-filters');
-    const candleCards = document.querySelectorAll('.candle-card');
+    const candleCardElements = document.querySelectorAll('.candle-card');
 
     function filterCandles() {
       const query = searchInput.value.toLowerCase().trim();
-      const activeTags = Array.from(tagFiltersContainer!.querySelectorAll('.tag-btn.active'))
-                             .map(btn => (btn as HTMLElement).dataset.tag);
+      const activeTagKeys = Array.from(tagFilterContainer!.querySelectorAll('.tag-btn.active'))
+        .map((button) => (button as HTMLElement).dataset.tag)
+        .filter((tag): tag is string => Boolean(tag));
 
-      candleCards.forEach(card => {
-        const title = card.getAttribute('data-title') || '';
-        const desc = card.getAttribute('data-description') || '';
-        const cardTags = (card.getAttribute('data-tags') || '').split(',').filter(Boolean);
+      candleCardElements.forEach((cardElement) => {
+        const title = cardElement.getAttribute('data-title') || '';
+        const description = cardElement.getAttribute('data-description') || '';
+        const tagKeys = (cardElement.getAttribute('data-tags') || '').split(',').filter(Boolean);
 
-        const matchesSearch = !query || title.includes(query) || desc.includes(query);
-        const matchesTags = activeTags.length === 0 || 
-                           activeTags.every(tag => cardTags.includes(tag));
+        const matchesSearch = !query || title.includes(query) || description.includes(query);
+        const matchesTagFilters = activeTagKeys.length === 0
+          || activeTagKeys.every((tagKey) => tagKeys.includes(tagKey));
 
-        (card as HTMLElement).style.display = (matchesSearch && matchesTags) ? 'block' : 'none';
+        (cardElement as HTMLElement).style.display =
+          matchesSearch && matchesTagFilters ? 'block' : 'none';
       });
     }
 
     function initFilters() {
-      tagFiltersContainer?.addEventListener('click', (e) => {
+      tagFilterContainer?.addEventListener('click', (e) => {
         const target = e.target as HTMLElement;
         if (target.classList.contains('tag-btn')) {
           target.classList.toggle('active');
-          target.classList.toggle('border-[#4f6a5e]');
-          target.classList.toggle('bg-[#4f6a5e]');
-          target.classList.toggle('text-white');
           filterCandles();
         }
       });
@@ -181,8 +191,8 @@ const allTagObjects = [...new Set(
 
       clearButton?.addEventListener('click', () => {
         if (searchInput) searchInput.value = '';
-        document.querySelectorAll('.tag-btn').forEach(btn => {
-          btn.classList.remove('active', 'border-[#4f6a5e]', 'bg-[#4f6a5e]', 'text-white');
+        document.querySelectorAll('.tag-btn').forEach((button) => {
+          button.classList.remove('active');
         });
         filterCandles();
       });
@@ -196,11 +206,19 @@ const allTagObjects = [...new Set(
   </script>
 
   <style>
+    .tag-btn {
+      transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+    }
+
+    .tag-btn:not(.active):hover {
+      background-color: rgba(255,255,255,0.9);
+    }
+
     .tag-btn.active {
-      border-color: #4f6a5e;
-      background-color: #4f6a5e;
-      color: white;
+      background-color: var(--tag-color);
+      color: white !important;
+      border-color: var(--tag-color);
+      box-shadow: 0 8px 16px -10px rgba(0, 0, 0, 0.25);
     }
   </style>
-
 </Layout>

@@ -1,7 +1,6 @@
 ---
 // src/components/CandleSection.astro
 
-
 import { getLangFromUrl, useTranslations } from '../i18n/utils';
 import CandleCard from '../ui/CandleCard.astro';
 import { getMajorCandles } from '../lib/GetCandleContents.ts';
@@ -14,8 +13,6 @@ const majorCandles = await getMajorCandles(currentLang);
 
 <div id="candles" class="section py-28 bg-white" data-island>
   <div class="max-w-screen-2xl mx-auto px-10">
-
-
     <div class="flex flex-col md:flex-row justify-between items-start md:items-baseline gap-6 mb-12">
       <div>
         <h2 class="text-5xl font-medium tracking-tight text-stone-800">
@@ -23,25 +20,26 @@ const majorCandles = await getMajorCandles(currentLang);
         </h2>
         <p class="text-stone-600 mt-2">{t('candle.section.desc')}</p>
       </div>
-      
-      <a 
-        href={currentLang === 'ja' ? "/portfolio/candles/" : `/portfolio/${currentLang}/candles/`}
-        class="inline-flex items-center gap-3 px-8 py-4 bg-white border-2 border-[#4f6a5e] rounded-3xl 
-               hover:bg-[#4f6a5e] hover:text-white hover:border-[#4f6a5e] 
-               transition-all duration-300 text-[#4f6a5e] font-medium text-lg shadow-sm">
+
+      <a
+        href={currentLang === 'ja' ? '/portfolio/candles/' : `/portfolio/${currentLang}/candles/`}
+        class="inline-flex items-center gap-3 px-8 py-4 bg-white border-2 border-[#4f6a5e] rounded-3xl
+               hover:bg-[#4f6a5e] hover:text-white hover:border-[#4f6a5e]
+               transition-all duration-300 text-[#4f6a5e] font-medium text-lg shadow-sm"
+      >
         {t('candle.goToCollection')}
         <span class="transition-transform">→</span>
       </a>
     </div>
 
     <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-10">
-      {majorCandles.map((candle) => (
-        <CandleCard 
-          candle={candle}
+      {majorCandles.map((candleItem) => (
+        <CandleCard
+          candle={candleItem}
           lang={currentLang}
-          href={currentLang === 'ja' 
-            ? `/portfolio/candles/${candle.slug}/` 
-            : `/portfolio/${currentLang}/candles/${candle.slug}/`}
+          href={currentLang === 'ja'
+            ? `/portfolio/candles/${candleItem.slug}/`
+            : `/portfolio/${currentLang}/candles/${candleItem.slug}/`}
         />
       ))}
     </div>
@@ -51,6 +49,5 @@ const majorCandles = await getMajorCandles(currentLang);
         <p class="text-2xl font-medium">{t('common.emptyMessage')}</p>
       </div>
     )}
-
   </div>
 </div>
