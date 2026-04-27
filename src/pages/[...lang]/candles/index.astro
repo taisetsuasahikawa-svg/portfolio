@@ -3,7 +3,7 @@
 // 多言語対応・言語フォルダ方式（ja/en）完全対応版
 
 import Layout from '../../../layouts/Layout.astro';
-import { useTranslations } from '../../../i18n/utils';
+import { getLangFromUrl, useTranslations } from '../../../i18n/utils';
 import { supportedLangs } from '../../../i18n/ui.ts';
 
 import CandleCard from '../../../ui/CandleCard.astro';
@@ -18,9 +18,8 @@ export async function getStaticPaths() {
   }));
 }
 
-// 現在の言語を取得
-const { lang: propLang } = Astro.props;
-const currentLang = propLang;
+// 現在の言語を取得（全ページ共通: URLベース）
+const currentLang = getLangFromUrl(Astro.url);
 const t = useTranslations(currentLang);
 
 // 全キャンドルデータを現在の言語で取得（言語フォルダ方式対応済み）

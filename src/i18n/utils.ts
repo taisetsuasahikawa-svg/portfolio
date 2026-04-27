@@ -9,7 +9,19 @@ export function useTranslations(lang: Lang) {
     return current?.[lang] ?? current?.ja ?? key;
   };
 }
+// ==================== URLから現在の言語を取得（Layout.astro用） ====================
+export function getLangFromId(id: string): Lang {
+  if (!id) return 'ja';
 
+  const parts = id.split('/');
+  const firstPart = parts[0]?.toLowerCase();
+
+  // supportedLangs に登録されている言語ならそれを返す
+  if (supportedLangs.includes(firstPart as Lang)) {
+    return firstPart as Lang;
+  }
+  return 'ja';
+}
 // ==================== URLから現在の言語を取得（Layout.astro用） ====================
 export function getLangFromUrl(url: URL): Lang {
   const base = import.meta.env.BASE_URL.replace(/\/$/, '');

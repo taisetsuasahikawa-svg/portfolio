@@ -13,7 +13,7 @@ import AppSection from '../../components/AppSection.astro';
 import MaterialsSection from '../../components/MaterialsSection.astro';
 import EventsSection from '../../components/EventsSection.astro';
 
-import { useTranslations } from '../../i18n/utils';
+import { getLangFromUrl, useTranslations } from '../../i18n/utils';
 
 export async function getStaticPaths() {
   return supportedLangs.map((lang: Lang) => ({
@@ -24,8 +24,8 @@ export async function getStaticPaths() {
   }));
 }
 
-const { lang: propLang } = Astro.props;
-const currentLang = propLang;
+// 現在の言語を取得（全ページ共通: URLベース）
+const currentLang = getLangFromUrl(Astro.url);
 const t = useTranslations(currentLang);
 ---
 

@@ -3,22 +3,17 @@
 // 言語フォルダ方式 + ルーティング競合修正版
 
 import Layout from '../../../../layouts/Layout.astro';
-import { getLangFromUrl, useTranslations } from '../../../../i18n/utils';
-import { supportedLangs } from '../../../../i18n/ui.ts';
+import { getLangFromId, getLangFromUrl, useTranslations } from '../../../../i18n/utils';
 import { CONTACT_INFO } from '../../../../constants/paths.ts';
 import { getCollection, render } from 'astro:content';
 import ImageSlider from '../../../../ui/ImageSlider.astro';
 
 import { 
   processCandleEntry, 
-  getLangFromId 
 } from '../../../../lib/GetCandleContents.ts';
 
 export async function getStaticPaths() {
   const allEntries = await getCollection('candles');
-
-  console.log('=== getStaticPaths (candles/[slug]) が呼ばれました ===');
-  console.log('総エントリ数:', allEntries.length);
 
   const paths = allEntries.map((entry) => {
     const langFromFile = getLangFromId(entry.id);
@@ -42,12 +37,12 @@ export async function getStaticPaths() {
     };
   });
 
-  console.log('生成されたパス数:', paths.length);
   return paths;
 }
 
-const { entry, lang: propLang } = Astro.props;
-const currentLang = propLang;
+const { entry } = Astro.props;
+// 現在の言語を取得（全ページ共通: URLベース）
+const currentLang = getLangFromUrl(Astro.url);
 const t = useTranslations(currentLang);
 
 const candle = processCandleEntry(entry, currentLang);

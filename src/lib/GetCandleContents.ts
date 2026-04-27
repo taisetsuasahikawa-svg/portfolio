@@ -1,6 +1,7 @@
 // src/lib/GetCandleContents.ts
 import { getCollection, type CollectionEntry } from 'astro:content';
 import type { Lang } from '../i18n/ui.ts';
+import { getLangFromId } from '../i18n/utils.ts';
 
 export type ProcessedCandle = {
   title: string;
@@ -16,25 +17,6 @@ export type ProcessedCandle = {
   [key: string]: any;
 };
 
-/** 
- * フォルダから言語を判定（content/ja/ や content/en/ 対応）
- * entry.id の例: "ja/amethyst-geode" または "en/amethyst-geode"
- */
-export function getLangFromId(id: string): Lang {
-  if (!id) return 'ja';
-  
-  const parts = id.split('/');
-  const firstPart = parts[0]?.toLowerCase();
-
-  if (firstPart === 'en') return 'en';
-  if (firstPart === 'ja') return 'ja';
-  
-  // 念のためフォルダ名に "ja" や "en" が含まれているかチェック
-  if (id.includes('/ja/')) return 'ja';
-  if (id.includes('/en/')) return 'en';
-
-  return 'ja'; // デフォルト
-}
 
 /** 指定言語のキャンドルだけ取得 */
 export async function getCandleEntries(lang: Lang) {
