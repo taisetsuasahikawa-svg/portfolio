@@ -1,13 +1,13 @@
 ---
 // src/pages/[...lang]/candles/index.astro
-// キャンドル一覧ページ
+// 多言語対応・言語フォルダ方式（ja/en）完全対応版
 
 import Layout from '../../../layouts/Layout.astro';
-import { getLangFromUrl, useTranslations } from '../../../i18n/utils';
+import { useTranslations } from '../../../i18n/utils';
 import { supportedLangs } from '../../../i18n/ui.ts';
-import { getCollection } from 'astro:content';
-import WorkCard from '../../../ui/WorkCard.astro';
-import { IMAGE_PATHS } from '../../../constants/paths.ts';
+
+import CandleCard from '../../../ui/CandleCard.astro';
+import { getAllProcessedCandles } from '../../../lib/GetCandleContents.ts';
 
 export async function getStaticPaths() {
   return supportedLangs.map((lang) => ({
@@ -18,39 +18,33 @@ export async function getStaticPaths() {
   }));
 }
 
+// 現在の言語を取得
 const { lang: propLang } = Astro.props;
-const currentLang = (propLang || 'ja') as typeof supportedLangs[number];
+const currentLang = propLang;
 const t = useTranslations(currentLang);
 
-const allEntries = await getCollection('candles');
+// 全キャンドルデータを現在の言語で取得（言語フォルダ方式対応済み）
+const allCandles = await getAllProcessedCandles(currentLang);
 
-const candles = allEntries.map((entry) => {
-  const data = entry.data;
-  return {
-    ...data,
-    title: data.title[currentLang],
-    description: data.description[currentLang],
-    image: IMAGE_PATHS.candles[data.id as keyof typeof IMAGE_PATHS.candles] 
-           || `${import.meta.env.BASE_URL}images/candles/placeholder.jpg`,
-    href: currentLang === 'ja' 
-      ? `/portfolio/candles/${data.slug}/` 
-      : `/portfolio/${currentLang}/candles/${data.slug}/`,
-    tags: data.tags || [],
-  };
-});
-
-// 全てのユニークなタグをサーバー側で集める
+// タグフィルター用（重複除去）
 const allTagObjects = [...new Set(
-  allEntries.flatMap(entry => entry.data.tags || [])
+  allCandles.flatMap(candle => candle.tags || [])
 )].map(tagKey => ({
   key: tagKey,
   label: t(`candleTag.${tagKey}`) || tagKey
 }));
 ---
 
-<Layout title={`${t('candle.section.title')} | ${t('site.title')}`}>
+<Layout title={`${t('candle.list.title')} | ${t('site.title')}`}>
 
   <div class="max-w-screen-2xl mx-auto px-6 md:px-10 py-12 bg-[#f8f5f0]">
+
+    <!-- HOMEリンク -->
+    <a 
+      href={currentLang === 'ja' ? '/portfolio/' : `/portfolio/${currentLang}/`}
+      class="inline-flex items-center gap-2 text-[#4f6a5e] hover:text-stone-900 mb-8 font-medium transition-colors">
+      ← {t('common.backToHome')}
+    </a>
 
     <!-- ページヘッダー -->
     <div class="flex flex-col md:flex-row justify-between items-start md:items-end gap-6 mb-12">
@@ -62,23 +56,24 @@ const allTagObjects = [...new Set(
           {t('candle.list.desc')}
         </p>
       </div>
+
       <!-- 取扱説明書リンク -->
-      <div class="mb-10 flex justify-end">
+      <div class="flex flex-col sm:flex-row gap-4">
         <a 
           href={currentLang === 'ja' ? '/portfolio/thanks/' : `/portfolio/${currentLang}/thanks/`}
-          class="group inline-flex items-center gap-3 px-8 py-4 bg-white border-2 border-[#4f6a5e] 
-                rounded-3xl hover:bg-[#4f6a5e] hover:text-white transition-all 
-                text-[#4f6a5e] font-medium text-lg shadow-sm">
-          <span>{t('candle.careTitle')}</span>
-          <span class="group-hover:translate-x-1 transition-transform">→</span>
+          target="_blank"
+          rel="noopener noreferrer"
+          class="group inline-flex items-center justify-center gap-3 w-full sm:w-auto 
+                px-8 py-4 bg-white border-2 border-[#0d2f68] rounded-3xl 
+                hover:bg-[#0d2f68] hover:text-white transition-all 
+                text-[#0d2f68] font-medium text-lg shadow-sm
+                whitespace-normal text-center min-h-[58px]">
+          <span class="leading-tight">{t('candle.careTitle')}</span>
         </a>
       </div>
     </div>
 
-    
-    
-
-    <!-- 検索＆タグフィルター（CandleSectionから移植・改善） -->
+    <!-- 検索＆タグフィルター -->
     <div class="mb-12 flex flex-col md:flex-row gap-4 items-center">
       <div class="relative flex-1 max-w-md">
         <form id="search-form" class="relative">
@@ -119,30 +114,25 @@ const allTagObjects = [...new Set(
 
     <!-- 作品グリッド -->
     <div id="candle-grid" class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-      {candles.map((candle) => (
-        <div class="candle-card group" 
-             data-title={candle.title.toLowerCase()}
-             data-description={candle.description.toLowerCase()}
-             data-tags={candle.tags.join(',').toLowerCase()}>
-
-          <WorkCard 
-            title={candle.title}
-            description={candle.description}
-            image={candle.image}
-            href={candle.href}
-          />
-
-          <!-- タグ表示 -->
-          <div class="flex flex-wrap gap-2 mt-4 px-1">
-            {candle.tags.map((tag: string) => (
-              <span class="inline-block px-4 py-1 text-xs bg-[#4f6a5e]/10 text-[#4f6a5e] rounded-full font-medium">
-                #{t(`candleTag.${tag}`) || tag}
-              </span>
-            ))}
-          </div>
-        </div>
+      {allCandles.map((candle) => (
+        <CandleCard 
+          candle={candle}
+          lang={currentLang}
+          href={currentLang === 'ja' 
+            ? `/portfolio/candles/${candle.slug}/` 
+            : `/portfolio/${currentLang}/candles/${candle.slug}/`}
+          dataTitle={candle.title.toLowerCase()}
+          dataDescription={candle.description.toLowerCase()}
+          dataTags={candle.tags?.join(',')}
+        />
       ))}
     </div>
+
+    {allCandles.length === 0 && (
+      <div class="text-center py-20 text-stone-600">
+        <p class="text-2xl font-medium">{t('common.emptyMessage')}</p>
+      </div>
+    )}
 
   </div>
 

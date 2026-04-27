@@ -2,8 +2,8 @@
 // src/components/MaterialsSection.astro
 import { getLangFromUrl, useTranslations } from '../i18n/utils';
 
-const lang = getLangFromUrl(Astro.url);
-const t = useTranslations(lang);
+const currentLang = getLangFromUrl(Astro.url);
+const t = useTranslations(currentLang);
 ---
 
 <div id="materials" class="section py-28 bg-white" data-island>

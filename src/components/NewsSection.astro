@@ -4,14 +4,14 @@ import { getLangFromUrl, useTranslations } from '../i18n/utils';
 import { newsRaw } from '../data/news';
 import CardHover from '../ui/CardHover.astro';
 
-const lang = getLangFromUrl(Astro.url);
-const t = useTranslations(lang);
+const currentLang = getLangFromUrl(Astro.url);
+const t = useTranslations(currentLang);
 
 // ニュースデータを現在の言語に変換
 const newsItems = newsRaw.map(item => ({
   ...item,
-  title: item.title[lang],
-  description: item.description[lang],
+  title: item.title[currentLang],
+  description: item.description[currentLang],
 }));
 
 // 日付で新しい順（降順）に自動ソート

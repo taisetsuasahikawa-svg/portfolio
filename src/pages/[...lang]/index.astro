@@ -25,7 +25,7 @@ export async function getStaticPaths() {
 }
 
 const { lang: propLang } = Astro.props;
-const currentLang = (propLang || 'ja') as Lang;
+const currentLang = propLang;
 const t = useTranslations(currentLang);
 ---
 
@@ -66,21 +66,21 @@ const t = useTranslations(currentLang);
   <!-- ==================== メインコンテンツ ==================== -->
   <div class="max-w-screen-2xl mx-auto px-6 md:px-10" id="tab-content">
     <div id="tab-panel-0" class="tab-panel">
-      <HeroSection client:load />
-      <NewsSection client:load />
-      <EventsSection client:load />
+      <HeroSection />
+      <NewsSection />
+      <EventsSection />
     </div>
 
     <div id="tab-panel-1" class="tab-panel hidden">
-      <CandleSection client:load />
+      <CandleSection />
     </div>
 
     <div id="tab-panel-2" class="tab-panel hidden">
-      <AppSection client:load />
+      <AppSection />
     </div>
 
     <div id="tab-panel-3" class="tab-panel hidden">
-      <MaterialsSection client:load />
+      <MaterialsSection />
     </div>
   </div>
 

@@ -1,16 +1,16 @@
 ---
 import { getLangFromUrl, useTranslations } from '../i18n/utils';
 import { appsRaw, type AppRaw } from '../data/apps';
-import { IMAGE_PATHS } from '../constants/paths';
+import { IMAGE_PATHS, CONTACT_INFO } from '../constants/paths';
 
-const lang = getLangFromUrl(Astro.url);
-const t = useTranslations(lang);
+const currentLang = getLangFromUrl(Astro.url);
+const t = useTranslations(currentLang);
 
 // アプリデータを現在の言語に変換 + 画像パスを id から取得
 const apps = appsRaw.map((app: AppRaw) => ({
   ...app,
-  title: app.title[lang],
-  description: app.description[lang],
+  title: app.title[currentLang],
+  description: app.description[currentLang],
   statusLabel: t(`appStatus.${app.status}`),
   // id から画像パスを取得（constants/paths.ts で管理）
   image: IMAGE_PATHS.apps[app.id] || `${import.meta.env.BASE_URL}images/apps/placeholder.jpg`,
@@ -46,10 +46,14 @@ function getStatusClass(statusKey: string): string {
       <h2 class="text-5xl font-medium tracking-tight text-stone-800">
         {t('app.section.title')}
       </h2>
+      <!-- GitHubリンク　新しいタブで開く -->
       <a 
-        href="https://github.com/taisetsuasahikawa-svg/"
+        href={CONTACT_INFO.github}
         target="_blank"
-        class="text-[#4f6a5e] hover:underline text-lg inline-flex items-center gap-2">
+        rel="noopener noreferrer"
+        class="inline-flex items-center gap-3 px-8 py-4 bg-white border-2 border-[#4f6a5e] rounded-3xl 
+               hover:bg-[#4f6a5e] hover:text-white hover:border-[#4f6a5e] 
+               transition-all duration-300 text-[#4f6a5e] font-medium text-lg shadow-sm">
         {t('common.githubLink')}
       </a>
     </div>

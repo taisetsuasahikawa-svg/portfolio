@@ -8,29 +8,21 @@ const candles = defineCollection({
     pattern: '**/*.{md,mdx}',
   }),
   schema: z.object({
-    id: z.string(),
-    slug: z.string(),
     major: z.boolean().default(false),
-    title: z.object({
-      ja: z.string(),
-      en: z.string(),
-    }),
-    description: z.object({
-      ja: z.string(),
-      en: z.string(),
-    }),
-    tags: z.array(z.string()).default([]),
-    burnTime: z.object({ ja: z.string(), en: z.string() }).optional(),
-    size: z.object({ ja: z.string(), en: z.string() }).optional(),
 
-    // ★★★ ここを修正：オブジェクトの配列として定義 ★★★
+    title: z.string(),
+    description: z.string(),
+    desc1: z.string().optional(),
+    desc2: z.string().optional(),
+
+    tags: z.array(z.string()).default([]),
+    burnTime: z.string().optional(),
+    size: z.string().optional(),
+
     images: z.array(
       z.object({
         path: z.string(),
-        alt: z.object({
-          ja: z.string(),
-          en: z.string(),
-        }).optional(),   // altは任意でもOKに
+        alt: z.string().optional(),        // 言語ごとに1つの文字列のみ
       })
     ).default([]),
   }),

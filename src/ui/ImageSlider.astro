@@ -1,5 +1,5 @@
 ---
- // src/ui/ImageSlider.astro - 言語切り替え + タブ切り替え対応 最終強化版（タブ内 hidden 問題完全修正）
+ // src/ui/ImageSlider.astro
 import { Image } from 'astro:assets';
 
 const { 
@@ -81,7 +81,7 @@ const currentLang = lang || 'ja';
       type: 'loop',
       autoplay: true,
       pauseOnHover: true,
-      interval: 8000,
+      interval: 6500,
       speed: 900,
       arrows: true,
       pagination: true,
@@ -128,7 +128,7 @@ const currentLang = lang || 'ja';
     observer.observe(tabPanel, { attributes: true, attributeFilter: ['class'] });
   }
 
-  // 保険：ウィンドウリサイズ時にも更新
+  // 念のためウィンドウリサイズ時にも更新
   window.addEventListener('resize', () => {
     if (splideInstance && isVisible()) {
       splideInstance.refresh();

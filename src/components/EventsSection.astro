@@ -4,14 +4,14 @@ import { getLangFromUrl, useTranslations } from '../i18n/utils';
 import { eventsRaw } from '../data/events';
 import CardHover from '../ui/CardHover.astro';
 
-const lang = getLangFromUrl(Astro.url);
-const t = useTranslations(lang);
+const currentLang = getLangFromUrl(Astro.url);
+const t = useTranslations(currentLang);
 
 // 作品データを現在の言語に変換
 const events = eventsRaw.map(item => ({
   ...item,
-  title: item.title[lang],
-  description: item.description[lang],
+  title: item.title[currentLang],
+  description: item.description[currentLang],
 }));
 
 // ====================== イベント用ヘルパー関数 ======================

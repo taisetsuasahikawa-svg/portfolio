@@ -27,6 +27,18 @@ export const IMAGE_PATHS = {
     "scentcraft": `${BASE}/images/apps/scentcraft.png`,
     "burn-simulator": `${BASE}/images/apps/burn-simulator.png`,
   } as const,
+
+  care: {
+    safety1: ``,
+    safety2: ``,
+    safety3: ``,
+    safety4: ``,
+    safety5: ``,
+    safety6: ``,
+    safety7: ``,
+    safety8: ``,
+    safety9: ``,
+  } as const,
 } as const;
 
 // ==================== 連絡先情報 ====================
@@ -36,6 +48,7 @@ export const CONTACT_INFO = {
   etsy: 'https://www.etsy.com/shop/MineralArtCandlesJP/',
   x: 'https://x.com/TaisetsuCC/',
   instagram: 'https://www.instagram.com/taisetsucc/',
+  github: 'https://github.com/taisetsuasahikawa-svg/',
 } as const;
 
 export type CandleImageKey = keyof typeof IMAGE_PATHS.candles;
